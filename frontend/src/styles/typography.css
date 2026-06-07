@@ -1,0 +1,37 @@
+@layer utilities {
+  .heading-xl {
+    @apply text-3xl md:text-4xl font-bold text-text-primary;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .heading-lg {
+    @apply text-2xl md:text-3xl font-semibold text-text-primary;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .heading-md {
+    @apply text-xl md:text-2xl font-semibold text-text-primary;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .heading-sm {
+    @apply text-lg md:text-xl font-semibold text-text-primary;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .body-lg {
+    @apply text-base md:text-lg text-text-primary font-light;
+  }
+
+  .body-md {
+    @apply text-sm md:text-base text-text-primary;
+  }
+
+  .body-sm {
+    @apply text-xs md:text-sm text-text-secondary;
+  }
+
+  .caption {
+    @apply text-xs text-text-secondary font-light;
+  }
+}

@@ -1,0 +1,184 @@
+import { lazy } from 'react';
+
+const routes = [
+  {
+    path: '/',
+    component: lazy(() => import('../pages/SplashScreen')),
+    title: '',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: false,
+    exact: true,
+  },
+  {
+    path: '/onboarding',
+    component: lazy(() => import('../pages/OnboardingScreen')),
+    title: '',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: false,
+    exact: true,
+  },
+  {
+    path: '/login',
+    component: lazy(() => import('../pages/LoginScreen')),
+    title: 'Login',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: false,
+    exact: true,
+  },
+  {
+    path: '/signup',
+    component: lazy(() => import('../pages/SignupScreen')),
+    title: 'Sign Up',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: false,
+    exact: true,
+  },
+  {
+    path: '/forgot-password',
+    component: lazy(() => import('../pages/ForgotPasswordScreen')),
+    title: 'Forgot Password',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: false,
+    exact: true,
+  },
+  {
+    path: '/reset-password',
+    component: lazy(() => import('../pages/ResetPasswordScreen')),
+    title: 'Reset Password',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: false,
+    exact: true,
+  },
+  {
+    path: '/home',
+    component: lazy(() => import('../pages/HomeScreen')),
+    title: 'Home',
+    showBack: false,
+    showBottomNav: true,
+    showHeader: true,
+  },
+  {
+    path: '/search',
+    component: lazy(() => import('../pages/SearchScreen')),
+    title: 'Search',
+    showBack: false,
+    showBottomNav: true,
+    showHeader: true,
+  },
+  {
+    path: '/categories',
+    component: lazy(() => import('../pages/CategoriesScreen')),
+    title: 'Categories',
+    showBack: false,
+    showBottomNav: true,
+    showHeader: true,
+  },
+  {
+    path: '/wishlist',
+    component: lazy(() => import('../pages/WishlistScreen')),
+    title: 'My Wishlist',
+    showBack: true,
+    showBottomNav: true,
+    showHeader: true,
+  },
+  {
+    path: '/cart',
+    component: lazy(() => import('../pages/CartScreen')),
+    title: 'Shopping Cart',
+    showBack: true,
+    showBottomNav: true,
+    showHeader: true,
+  },
+  {
+    path: '/profile',
+    component: lazy(() => import('../pages/ProfileScreen')),
+    title: 'My Profile',
+    showBack: true,
+    showBottomNav: true,
+    showHeader: true,
+  },
+  {
+    path: '/orders',
+    component: lazy(() => import('../pages/OrdersScreen')),
+    title: 'My Orders',
+    showBack: true,
+    showBottomNav: true,
+    showHeader: true,
+  },
+  {
+    path: '/settings',
+    component: lazy(() => import('../pages/SettingsScreen')),
+    title: 'Settings',
+    showBack: true,
+    showBottomNav: true,
+    showHeader: true,
+  },
+  {
+    path: '/checkout',
+    component: lazy(() => import('../pages/CheckoutScreen')),
+    title: 'Checkout',
+    showBack: true,
+    showBottomNav: false,
+    showHeader: true,
+  },
+  {
+    path: '/order-success',
+    component: lazy(() => import('../pages/OrderSuccessScreen')),
+    title: 'Order Confirmed',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: false,
+  },
+  {
+    path: '/reels',
+    component: lazy(() => import('../pages/ReelsScreen')),
+    title: 'Reels',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: false,
+  },
+  {
+    path: '/gallery',
+    component: lazy(() => import('../pages/GalleryScreen')),
+    title: 'Inspiration',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: true,
+  },
+  {
+    path: '/products/:category',
+    component: lazy(() => import('../pages/ProductListingScreen')),
+    title: 'Products',
+    showBack: true,
+    showBottomNav: true,
+    showHeader: true,
+    dynamicTitle: true,
+  },
+  {
+    path: '/product/:id',
+    component: lazy(() => import('../pages/ProductDetailsScreen')),
+    title: 'Product',
+    showBack: true,
+    showBottomNav: false,
+    showHeader: false,
+    dynamicTitle: true,
+  },
+];
+
+export const authRoutes = ['/login', '/signup', '/onboarding', '/forgot-password', '/reset-password'];
+
+export const bottomNavRoutes = routes
+  .filter((r) => r.showBottomNav)
+  .map((r) => r.path);
+
+export const headerRoutes = routes
+  .filter((r) => r.showHeader)
+  .map((r) => r.path);
+
+export default routes;

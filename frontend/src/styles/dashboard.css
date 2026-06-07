@@ -1,0 +1,147 @@
+@layer utilities {
+  .admin-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    display: block;
+  }
+  .admin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .admin-scrollbar::-webkit-scrollbar-thumb {
+    background: #D8B4A0;
+    border-radius: 3px;
+  }
+  .admin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #B08968;
+  }
+
+  .glass-header {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(234, 220, 214, 0.5);
+  }
+
+  .sidebar-gradient {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F5 100%);
+  }
+
+  .stat-card-gradient {
+    background: linear-gradient(135deg, #FFF8F5 0%, #FFFFFF 100%);
+  }
+
+  .table-row-hover:hover {
+    background: rgba(216, 180, 160, 0.08);
+  }
+
+  .admin-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(234, 220, 214, 0.6);
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  .admin-card-hover:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #D8B4A0;
+  }
+
+  .admin-input {
+    @apply w-full bg-white rounded-lg border border-border px-4 py-2.5 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200;
+  }
+
+  .admin-select {
+    @apply w-full bg-white rounded-lg border border-border px-4 py-2.5 text-sm text-text-primary focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 appearance-none;
+  }
+
+  .admin-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .admin-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-secondary text-text-primary text-sm font-medium rounded-lg hover:bg-border transition-all duration-200;
+  }
+
+  .admin-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-text-secondary rounded-lg hover:bg-secondary hover:text-text-primary transition-all duration-200;
+  }
+
+  .admin-btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-danger text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-all duration-200;
+  }
+
+  .admin-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .admin-table {
+    @apply w-full text-left;
+  }
+
+  .admin-table th {
+    @apply px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider;
+  }
+
+  .admin-table td {
+    @apply px-4 py-3 text-sm text-text-primary;
+  }
+
+  .admin-table tr {
+    @apply border-b border-border/50 last:border-0;
+  }
+
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-secondary hover:text-primary hover:bg-primary/5 transition-all duration-200 cursor-pointer;
+  }
+
+  .sidebar-item.active {
+    @apply text-primary bg-primary/10 font-semibold;
+  }
+
+  .dark .glass-header {
+    background: rgba(30, 30, 30, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .dark .sidebar-gradient {
+    background: linear-gradient(180deg, #1E1E1E 0%, #252525 100%);
+  }
+
+  .dark .stat-card-gradient {
+    background: linear-gradient(135deg, #252525 0%, #1E1E1E 100%);
+  }
+
+  .dark .admin-card {
+    background: #252525;
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .dark .admin-input,
+  .dark .admin-select {
+    background: #1E1E1E;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #E0E0E0;
+  }
+
+  @media (max-width: 768px) {
+    .mobile-stack {
+      @apply flex-col;
+    }
+    .mobile-full {
+      @apply w-full;
+    }
+    .mobile-table-card tr {
+      @apply block border-b-2 border-border/50 p-4;
+    }
+    .mobile-table-card td {
+      @apply block px-0 py-1 text-sm;
+    }
+    .mobile-table-card td:before {
+      content: attr(data-label);
+      @apply block text-xs font-semibold text-text-secondary mb-0.5;
+    }
+    .mobile-table-card thead {
+      @apply hidden;
+    }
+  }
+}

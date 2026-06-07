@@ -1,0 +1,27 @@
+@theme {
+  --color-primary: #D8B4A0;
+  --color-primary-dark: #B08968;
+  --color-secondary: #FFF8F5;
+  --color-background: #FCF7F4;
+  --color-card: #FFFFFF;
+  --color-text-primary: #3E2C28;
+  --color-text-secondary: #7B6A65;
+  --color-border: #EADCD6;
+  --color-shadow: rgba(0, 0, 0, 0.05);
+  --color-error: #E74C3C;
+  --color-success: #27AE60;
+  --color-danger: #E53935;
+  --color-warning: #FFB020;
+  --color-info: #2196F3;
+  --color-star: #F4A460;
+}
+
+@layer base {
+  * {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
