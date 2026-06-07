@@ -10,15 +10,15 @@ import {
   Share2,
   Star,
 } from "lucide-react";
-import Button from "../components/ui/Button";
-import Badge from "../components/ui/Badge";
-import SizeSelector from "../components/ui/SizeSelector";
-import ColorSelector from "../components/ui/ColorSelector";
-import ReviewCard from "../components/ui/ReviewCard";
-import ProductCard from "../components/ui/ProductCard";
-import { useAppContext } from "../context/AppContext";
-import { products } from "../data/products";
-import { reviews } from "../data/reviews";
+import Button from "../../components/ui/Button";
+import Badge from "../../components/ui/Badge";
+import SizeSelector from "../../components/ui/SizeSelector";
+import ColorSelector from "../../components/ui/ColorSelector";
+import ReviewCard from "../../components/ui/ReviewCard";
+import ProductCard from "../../components/ui/ProductCard";
+import { useAppContext } from "../../context/AppContext";
+import { products } from "../../data/products";
+import { reviews } from "../../data/reviews";
 
 export default function ProductDetailsScreen() {
   const { id } = useParams();
@@ -63,7 +63,7 @@ export default function ProductDetailsScreen() {
   const inWishlist = wishlist?.includes(product.id);
 
   return (
-    <div className="pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-secondary to-background pb-24">
       {/* Image Carousel */}
       <div className="relative">
         <div className="relative aspect-[4/5] overflow-hidden">
@@ -314,7 +314,7 @@ export default function ProductDetailsScreen() {
       </div>
 
       {/* Sticky Bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-5 py-4 flex gap-3 shadow-lg">
+      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border/60 px-5 py-4 flex gap-3 shadow-2xl rounded-t-2xl">
         <Button
           variant="primary"
           size="lg"

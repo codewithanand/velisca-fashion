@@ -2,9 +2,7 @@ import { useState, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { User, Mail, Phone, Lock, Eye, EyeOff, AlertCircle, Check, X } from 'lucide-react'
-import Input from '../components/ui/Input'
-import Button from '../components/ui/Button'
-import { useAppContext } from '../context/AppContext'
+import { useAppContext } from '../../context/AppContext'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]).{8,}$/
@@ -57,6 +55,24 @@ const passwordRequirements = [
   { label: 'One special character', test: (v) => /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]/.test(v) },
 ]
 
+const fieldVariants = {
+  focus: { scale: 1.01, transition: { type: 'spring', stiffness: 300, damping: 25 } },
+  blur: { scale: 1 },
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.07, delayChildren: 0.15 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 24 } },
+}
+
 export default function SignupScreen() {
   const navigate = useNavigate()
   const { signup } = useAppContext()
@@ -72,6 +88,7 @@ export default function SignupScreen() {
   const [isLoading, setIsLoading] = useState(false)
   const [generalError, setGeneralError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
+  const [focusedField, setFocusedField] = useState(null)
 
   const handleChange = useCallback((field) => (e) => {
     let value = e.target.value
@@ -115,98 +132,173 @@ export default function SignupScreen() {
     }
   }
 
+  const inputClass = (field) => `
+    w-full h-14 bg-white/80 backdrop-blur-sm rounded-2xl border-2 pl-12 pr-12
+    text-base text-text-primary placeholder:text-text-secondary/50
+    transition-all duration-300 ease-out
+    ${fieldErrors[field] ? 'border-error/60 focus:border-error' : focusedField === field ? 'border-primary shadow-lg shadow-primary/15' : 'border-border/60 hover:border-border'}
+    focus:outline-none
+  `
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-secondary to-background flex flex-col">
       <motion.div
-        className="w-full max-w-sm bg-card rounded-2xl shadow-lg p-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="flex-1 flex flex-col px-6 pt-16 pb-8 max-w-md mx-auto w-full"
       >
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold tracking-widest text-text-primary">
-            VELISCA
+        <motion.div variants={itemVariants} className="flex flex-col items-center pt-4 pb-2">
+          <motion.img
+            src="/logo.png"
+            alt="Velisca"
+            className="w-20 h-20"
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, type: 'spring', stiffness: 120, damping: 14 }}
+          />
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="mt-6 mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-text-primary text-center">
+            Create Account
           </h1>
-          <h2 className="text-xl font-semibold mt-6 mb-1">Create Account</h2>
-          <p className="text-sm text-text-secondary">Join the Velisca family</p>
-        </div>
+          <p className="text-base text-text-secondary/70 text-center mt-2">
+            Join the Velisca family
+          </p>
+        </motion.div>
 
         {generalError && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2 text-sm text-red-600">
-            <AlertCircle size={16} className="mt-0.5 shrink-0" />
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-5 px-4 py-3.5 bg-red-50/80 backdrop-blur-sm border border-red-200/60 rounded-2xl flex items-start gap-2.5 text-sm text-red-600"
+          >
+            <AlertCircle size={17} className="mt-0.5 shrink-0" />
             <span>{generalError}</span>
-          </div>
+          </motion.div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div>
-            <Input
-              icon={User}
-              placeholder="Full Name"
-              value={form.name}
-              onChange={handleChange('name')}
-              error={fieldErrors.name}
-            />
-          </div>
-          <div>
-            <Input
-              icon={Mail}
-              type="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={handleChange('email')}
-              error={fieldErrors.email}
-            />
-          </div>
-          <div>
-            <Input
-              icon={Phone}
-              type="tel"
-              placeholder="Phone"
-              value={form.phone}
-              onChange={handleChange('phone')}
-              error={fieldErrors.phone}
-              maxLength={10}
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
+        <motion.form variants={itemVariants} onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+          <motion.div
+            animate={focusedField === 'name' ? 'focus' : 'blur'}
+            variants={fieldVariants}
+          >
             <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">
-                <Lock size={18} />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/60 z-10">
+                <User size={20} />
+              </div>
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={form.name}
+                onChange={handleChange('name')}
+                onFocus={() => setFocusedField('name')}
+                onBlur={() => setFocusedField(null)}
+                className={inputClass('name')}
+                autoComplete="name"
+                enterKeyHint="next"
+              />
+            </div>
+            {fieldErrors.name && (
+              <p className="text-xs text-error mt-1.5 ml-1">{fieldErrors.name}</p>
+            )}
+          </motion.div>
+
+          <motion.div
+            animate={focusedField === 'email' ? 'focus' : 'blur'}
+            variants={fieldVariants}
+          >
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/60 z-10">
+                <Mail size={20} />
+              </div>
+              <input
+                type="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={handleChange('email')}
+                onFocus={() => setFocusedField('email')}
+                onBlur={() => setFocusedField(null)}
+                className={inputClass('email')}
+                autoComplete="email"
+                enterKeyHint="next"
+              />
+            </div>
+            {fieldErrors.email && (
+              <p className="text-xs text-error mt-1.5 ml-1">{fieldErrors.email}</p>
+            )}
+          </motion.div>
+
+          <motion.div
+            animate={focusedField === 'phone' ? 'focus' : 'blur'}
+            variants={fieldVariants}
+          >
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/60 z-10">
+                <Phone size={20} />
+              </div>
+              <input
+                type="tel"
+                placeholder="Phone"
+                value={form.phone}
+                onChange={handleChange('phone')}
+                onFocus={() => setFocusedField('phone')}
+                onBlur={() => setFocusedField(null)}
+                className={inputClass('phone')}
+                autoComplete="tel"
+                enterKeyHint="next"
+                maxLength={10}
+              />
+            </div>
+            {fieldErrors.phone && (
+              <p className="text-xs text-error mt-1.5 ml-1">{fieldErrors.phone}</p>
+            )}
+          </motion.div>
+
+          <motion.div
+            animate={focusedField === 'password' ? 'focus' : 'blur'}
+            variants={fieldVariants}
+          >
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/60 z-10">
+                <Lock size={20} />
               </div>
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Password"
                 value={form.password}
                 onChange={handleChange('password')}
-                className={`w-full bg-card rounded-2xl border ${
-                  fieldErrors.password ? 'border-error' : 'border-border'
-                } focus:border-primary focus:ring-1 focus:ring-primary pl-11 pr-12 py-3 text-text-primary placeholder:text-text-secondary transition-colors duration-200`}
+                onFocus={() => setFocusedField('password')}
+                onBlur={() => setFocusedField(null)}
+                className={inputClass('password')}
+                autoComplete="new-password"
+                enterKeyHint="next"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((p) => !p)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary/50 hover:text-text-secondary transition-colors z-10 p-1"
+                tabIndex={-1}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             {fieldErrors.password && (
-              <p className="text-xs text-error pl-2">{fieldErrors.password}</p>
+              <p className="text-xs text-error mt-1.5 ml-1">{fieldErrors.password}</p>
             )}
             {form.password.length > 0 && (
-              <div className="mt-1 space-y-1 pl-2">
+              <div className="mt-3 space-y-1.5 ml-1">
                 {passwordRequirements.map((req) => {
                   const met = req.test(form.password)
                   return (
-                    <div key={req.label} className="flex items-center gap-1.5 text-xs">
+                    <div key={req.label} className="flex items-center gap-2 text-xs">
                       {met ? (
-                        <Check size={12} className="text-success shrink-0" />
+                        <Check size={13} className="text-success shrink-0" />
                       ) : (
-                        <X size={12} className="text-error shrink-0" />
+                        <X size={13} className="text-error/70 shrink-0" />
                       )}
-                      <span className={met ? 'text-text-secondary' : 'text-text-secondary/60'}>
+                      <span className={met ? 'text-text-secondary/70' : 'text-text-secondary/50'}>
                         {req.label}
                       </span>
                     </div>
@@ -214,46 +306,79 @@ export default function SignupScreen() {
                 })}
               </div>
             )}
-          </div>
+          </motion.div>
 
-          <div className="flex flex-col gap-1.5">
+          <motion.div
+            animate={focusedField === 'password_confirmation' ? 'focus' : 'blur'}
+            variants={fieldVariants}
+          >
             <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">
-                <Lock size={18} />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/60 z-10">
+                <Lock size={20} />
               </div>
               <input
                 type={showConfirm ? 'text' : 'password'}
                 placeholder="Confirm Password"
                 value={form.password_confirmation}
                 onChange={handleChange('password_confirmation')}
-                className={`w-full bg-card rounded-2xl border ${
-                  fieldErrors.password_confirmation ? 'border-error' : 'border-border'
-                } focus:border-primary focus:ring-1 focus:ring-primary pl-11 pr-12 py-3 text-text-primary placeholder:text-text-secondary transition-colors duration-200`}
+                onFocus={() => setFocusedField('password_confirmation')}
+                onBlur={() => setFocusedField(null)}
+                className={inputClass('password_confirmation')}
+                autoComplete="new-password"
+                enterKeyHint="done"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm((p) => !p)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary/50 hover:text-text-secondary transition-colors z-10 p-1"
+                tabIndex={-1}
               >
-                {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             {fieldErrors.password_confirmation && (
-              <p className="text-xs text-error pl-2">{fieldErrors.password_confirmation}</p>
+              <p className="text-xs text-error mt-1.5 ml-1">{fieldErrors.password_confirmation}</p>
             )}
-          </div>
+          </motion.div>
 
-          <Button type="submit" fullWidth className="mt-2" disabled={isLoading}>
-            {isLoading ? 'Creating account...' : 'Create Account'}
-          </Button>
-        </form>
+          <motion.button
+            type="submit"
+            disabled={isLoading}
+            className={`
+              w-full h-14 rounded-2xl font-semibold text-base text-white mt-2
+              bg-gradient-to-r from-primary to-primary-dark
+              shadow-xl shadow-primary/25
+              transition-all duration-300 ease-out
+              flex items-center justify-center gap-2.5
+              ${isLoading ? 'opacity-80' : 'hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]'}
+              disabled:cursor-not-allowed
+            `}
+            whileTap={{ scale: isLoading ? 1 : 0.97 }}
+          >
+            {isLoading ? (
+              <span className="flex items-center gap-2.5">
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Creating account...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2.5">
+                Create Account
+              </span>
+            )}
+          </motion.button>
+        </motion.form>
 
-        <p className="text-center text-sm text-text-secondary mt-8">
-          Already have an account?{' '}
-          <Link to="/login" className="text-primary font-medium hover:underline">
-            Sign In
-          </Link>
-        </p>
+        <motion.div variants={itemVariants} className="mt-auto pt-8 pb-4 text-center">
+          <p className="text-sm text-text-secondary/60">
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              className="font-semibold text-primary hover:text-primary-dark transition-colors"
+            >
+              Sign In
+            </Link>
+          </p>
+        </motion.div>
       </motion.div>
     </div>
   )

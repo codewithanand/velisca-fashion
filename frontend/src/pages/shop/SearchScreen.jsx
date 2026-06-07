@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { X, TrendingUp, Clock } from "lucide-react";
-import SearchBar from "../components/ui/SearchBar";
-import ProductCard from "../components/ui/ProductCard";
-import EmptyState from "../components/ui/EmptyState";
-import { useAppContext } from "../context/AppContext";
-import { products } from "../data/products";
+import SearchBar from "../../components/ui/SearchBar";
+import ProductCard from "../../components/ui/ProductCard";
+import EmptyState from "../../components/ui/EmptyState";
+import { useAppContext } from "../../context/AppContext";
+import { products } from "../../data/products";
 
 const trendingSearches = [
   "Floral Kurtis",
@@ -61,7 +61,7 @@ export default function SearchScreen() {
   };
 
   return (
-    <div className="px-5 py-4 space-y-5">
+    <div className="min-h-screen bg-gradient-to-b from-secondary to-background"><div className="px-5 py-4 space-y-5 max-w-md mx-auto w-full">
       {/* Search Bar */}
       <SearchBar
         value={searchTerm}
@@ -171,6 +171,6 @@ export default function SearchScreen() {
           description="Try adjusting your search or filter to find what you're looking for."
         />
       )}
-    </div>
+    </div></div>
   );
 }

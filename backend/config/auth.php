@@ -114,4 +114,6 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    'refresh_token_expiry' => env('REFRESH_TOKEN_EXPIRY_DAYS', 30),
+
 ];

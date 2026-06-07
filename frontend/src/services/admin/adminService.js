@@ -12,6 +12,19 @@ export const adminProductService = {
   create: (data) => api.post('/admin/products', data),
   update: (id, data) => api.put(`/admin/products/${id}`, data),
   delete: (id) => api.delete(`/admin/products/${id}`),
+  duplicate: (id) => api.post(`/admin/products/${id}/duplicate`),
+  toggleFeatured: (id) => api.put(`/admin/products/${id}/toggle-featured`),
+  toggleStatus: (id) => api.put(`/admin/products/${id}/toggle-status`),
+  bulkAction: (ids, action) => api.post('/admin/products/bulk-action', { ids, action }),
+};
+
+export const adminCategoryService = {
+  getAll: (params) => api.get('/admin/categories', params),
+  getTree: () => api.get('/admin/categories/tree'),
+  getById: (id) => api.get(`/admin/categories/${id}`),
+  create: (data) => api.post('/admin/categories', data),
+  update: (id, data) => api.put(`/admin/categories/${id}`, data),
+  delete: (id) => api.delete(`/admin/categories/${id}`),
 };
 
 export const adminOrderService = {
@@ -26,11 +39,19 @@ export const adminUserService = {
   toggleBlock: (id) => api.put(`/admin/users/${id}/toggle-block`),
 };
 
-export const adminCategoryService = {
-  getAll: () => api.get('/admin/categories'),
-  create: (data) => api.post('/admin/categories', data),
-  update: (id, data) => api.put(`/admin/categories/${id}`, data),
-  delete: (id) => api.delete(`/admin/categories/${id}`),
+export const adminReviewService = {
+  getAll: (params) => api.get('/admin/reviews', params),
+  approve: (id) => api.put(`/admin/reviews/${id}/approve`),
+  reject: (id) => api.put(`/admin/reviews/${id}/reject`),
+  delete: (id) => api.delete(`/admin/reviews/${id}`),
+};
+
+export const adminCollectionService = {
+  getAll: (params) => api.get('/admin/collections', params),
+  getById: (id) => api.get(`/admin/collections/${id}`),
+  create: (data) => api.post('/admin/collections', data),
+  update: (id, data) => api.put(`/admin/collections/${id}`, data),
+  delete: (id) => api.delete(`/admin/collections/${id}`),
 };
 
 export const adminCouponService = {

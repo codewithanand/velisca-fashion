@@ -55,6 +55,7 @@ export default function AdminTopHeader() {
           >
             <Menu size={20} className="text-text-primary" />
           </button>
+          <img src="/logo.png" alt="Velisca" className="w-7 h-7 lg:hidden" />
           <div className="hidden sm:flex items-center gap-2 bg-secondary rounded-lg px-3 py-2 min-w-[240px]">
             <Search size={16} className="text-text-secondary" />
             <input

@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer, useMemo, useCallback, useEffect } from 'react';
 import { orders as dummyOrders } from '../data/orders';
 import authService from '../services/authService';
-import { setAccessToken, setRefreshToken, clearAuth, getRefreshToken } from '../services/api';
+import { setAccessToken, setRefreshToken, setTokenExpiry, clearAuth, getRefreshToken, ensureFreshToken } from '../services/api';
 
 const AppContext = createContext(null);
 
@@ -79,6 +79,15 @@ function reducer(state, action) {
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // Ensure guest session_id exists for cart
+  useEffect(() => {
+    let sid = localStorage.getItem('session_id');
+    if (!sid) {
+      sid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+      localStorage.setItem('session_id', sid);
+    }
+  }, []);
+
   useEffect(() => {
     const token = getRefreshToken();
     if (!token) {
@@ -90,6 +99,9 @@ export function AppProvider({ children }) {
 
     const initAuth = async () => {
       try {
+        await ensureFreshToken();
+        if (cancelled) return;
+
         const response = await authService.me();
         if (cancelled) return;
         const user = response.data?.user;
@@ -119,9 +131,10 @@ export function AppProvider({ children }) {
   const login = useCallback(async (credentials) => {
     dispatch({ type: 'CLEAR_AUTH_ERROR' });
     const response = await authService.login(credentials);
-    const { user, access_token, refresh_token: newRefreshToken } = response.data;
+    const { user, access_token, refresh_token: newRefreshToken, expires_in } = response.data || {};
     setAccessToken(access_token);
     setRefreshToken(newRefreshToken);
+    if (expires_in) setTokenExpiry(expires_in);
     localStorage.setItem('user', JSON.stringify(user));
     dispatch({ type: 'LOGIN', payload: user });
     return response;
@@ -130,9 +143,10 @@ export function AppProvider({ children }) {
   const signup = useCallback(async (userData) => {
     dispatch({ type: 'CLEAR_AUTH_ERROR' });
     const response = await authService.register(userData);
-    const { user, access_token, refresh_token: newRefreshToken } = response.data;
+    const { user, access_token, refresh_token: newRefreshToken, expires_in } = response.data || {};
     setAccessToken(access_token);
     setRefreshToken(newRefreshToken);
+    if (expires_in) setTokenExpiry(expires_in);
     localStorage.setItem('user', JSON.stringify(user));
     dispatch({ type: 'SIGNUP', payload: user });
     return response;

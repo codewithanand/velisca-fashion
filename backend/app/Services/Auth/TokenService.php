@@ -14,7 +14,7 @@ class TokenService
         return $user->createToken(
             $deviceName,
             $abilities,
-            now()->addMinutes(config('sanctum.expiration', 15))
+            now()->addMinutes((int) config('sanctum.expiration', 15))
         );
     }
 
@@ -30,12 +30,14 @@ class TokenService
 
     public function expiresAt(): int
     {
-        return now()->addMinutes(config('sanctum.expiration', 15))->timestamp;
+        return now()->addMinutes((int) config('sanctum.expiration', 15))->timestamp;
     }
 
-    public function refreshTokenExpiresAt(): int
+    public function refreshTokenExpiresAt(bool $remember = false): int
     {
-        return now()->addDays(30)->timestamp;
+        return $remember
+            ? now()->addDays(365)->timestamp
+            : now()->addDays((int) config('auth.refresh_token_expiry', 30))->timestamp;
     }
 
     public function isValidRefreshToken(?string $token): bool
@@ -59,7 +61,7 @@ class TokenService
 
         $token->update([
             'refresh_token' => $this->hashRefreshToken($newRefreshToken),
-            'refresh_token_expires_at' => now()->addDays(30),
+            'refresh_token_expires_at' => now()->addDays((int) config('auth.refresh_token_expiry', 30)),
         ]);
 
         return $newRefreshToken;
@@ -72,10 +74,10 @@ class TokenService
         return PersonalAccessToken::where('refresh_token', $hashed)->first();
     }
 
-    public function storeRefreshToken(PersonalAccessToken $token, string $refreshToken): void
+    public function storeRefreshToken(PersonalAccessToken $token, string $refreshToken, bool $remember = false): void
     {
         $token->refresh_token = $this->hashRefreshToken($refreshToken);
-        $token->refresh_token_expires_at = now()->addDays(30);
+        $token->refresh_token_expires_at = now()->addDays((int) ($remember ? 365 : config('auth.refresh_token_expiry', 30)));
         $token->save();
     }
 

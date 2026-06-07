@@ -64,9 +64,13 @@ export default function MainLayout() {
                 <ArrowLeft size={20} className="text-text-primary" />
               </button>
             )}
-            <h1 className="text-lg font-semibold text-text-primary truncate">
-              {title}
-            </h1>
+            {pathname === '/home' ? (
+              <img src="/logo.png" alt="Velisca" className="w-8 h-8" />
+            ) : (
+              <h1 className="text-lg font-semibold text-text-primary truncate">
+                {title}
+              </h1>
+            )}
           </div>
           <div className="flex items-center gap-1 shrink-0">
             {pathname === '/home' && (

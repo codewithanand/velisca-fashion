@@ -21,8 +21,9 @@ Pattern: **Service Layer** — Controllers are thin, business logic lives in ser
 | Module | Description | Status |
 |--------|-------------|--------|
 | [Auth](./modules/auth.md) | Register, login, logout, token refresh, password reset | Done |
-| — | — | — |
-| *More modules coming soon* | | |
+| [Users](./modules/users.md) | User CRUD, search, filter, block/unblock, assign roles | Done |
+| [Permissions](./modules/permissions.md) | Role & permission management (Spatie RBAC) | Done |
+| [Products](./modules/products.md) | Products, variants, images, inventory, reviews, categories, brands, tags | Done |
 
 ---
 

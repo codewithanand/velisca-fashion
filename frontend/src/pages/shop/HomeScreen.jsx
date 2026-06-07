@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, ChevronLeft, ChevronRight, User } from "lucide-react";
-import ProductCard from "../components/ui/ProductCard";
-import SectionTitle from "../components/ui/SectionTitle";
-import Button from "../components/ui/Button";
-import { useAppContext } from "../context/AppContext";
-import { products } from "../data/products";
-import { banners } from "../data/banners";
+import ProductCard from "../../components/ui/ProductCard";
+import SectionTitle from "../../components/ui/SectionTitle";
+import Button from "../../components/ui/Button";
+import { useAppContext } from "../../context/AppContext";
+import { products } from "../../data/products";
+import { banners } from "../../data/banners";
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -45,7 +45,7 @@ export default function HomeScreen() {
     );
 
   return (
-    <div className="px-5 py-4 space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-secondary to-background"><div className="px-5 py-4 space-y-8 max-w-md mx-auto w-full">
       {/* Greeting Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -57,11 +57,11 @@ export default function HomeScreen() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+          <button className="relative w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm shadow-sm flex items-center justify-center">
             <Bell size={20} className="text-text-secondary" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
           </button>
-          <div className="w-10 h-10 rounded-full bg-secondary overflow-hidden">
+          <div className="w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm shadow-sm overflow-hidden">
             {user?.avatar ? (
               <img
                 src={user.avatar}
@@ -226,6 +226,6 @@ export default function HomeScreen() {
           </div>
         </div>
       </section>
-    </div>
+    </div></div>
   );
 }

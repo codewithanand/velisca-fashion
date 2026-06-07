@@ -73,7 +73,7 @@ function GalleryCard({ image }) {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="relative rounded-2xl overflow-hidden mb-4"
+      className="relative rounded-2xl overflow-hidden mb-4 shadow-sm backdrop-blur-sm"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -99,7 +99,7 @@ export default function GalleryScreen() {
   const rightColumn = galleryImages.filter((_, i) => i % 2 === 1)
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-secondary to-background">
       <div className="px-4 pt-6 pb-4">
         <h1 className="heading-md">Inspiration</h1>
         <p className="body-sm mt-1">Fashion ideas and trends</p>

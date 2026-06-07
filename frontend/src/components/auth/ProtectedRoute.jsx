@@ -1,15 +1,19 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import useAuthStore from '../../stores/auth.store';
+import { useAppContext } from '../../context/AppContext';
 
-export default function ProtectedRoute({ roles }) {
-  const { user, hasAnyRole } = useAuthStore();
+export default function ProtectedRoute() {
+  const { user, isAuthLoading } = useAppContext();
 
-  if (!user) {
-    return <Navigate to="/admin/login" replace />;
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
-  if (roles && !hasAnyRole(roles)) {
-    return <Navigate to="/admin" replace />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
   return <Outlet />;

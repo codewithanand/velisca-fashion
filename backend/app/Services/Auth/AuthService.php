@@ -32,7 +32,7 @@ class AuthService
             return null;
         }
 
-        return $this->generateAuthTokens($user, $data['device_name'] ?? 'unknown');
+        return $this->generateAuthTokens($user, $data['device_name'] ?? 'unknown', $data['remember'] ?? false);
     }
 
     public function logout(User $user, ?string $currentTokenId = null): void
@@ -47,7 +47,7 @@ class AuthService
         $this->tokenService->revokeAllTokens($user);
     }
 
-    private function generateAuthTokens(User $user, string $deviceName): array
+    private function generateAuthTokens(User $user, string $deviceName, bool $remember = false): array
     {
         $user->load('roles', 'permissions');
         $accessToken = $this->tokenService->createAccessToken($user, $deviceName);
@@ -56,7 +56,7 @@ class AuthService
 
         $refreshToken = $this->tokenService->createRefreshToken();
 
-        $this->tokenService->storeRefreshToken($accessToken->accessToken, $refreshToken);
+        $this->tokenService->storeRefreshToken($accessToken->accessToken, $refreshToken, $remember);
 
         $this->tokenService->storeTokenMetadata(
             $accessToken->accessToken,

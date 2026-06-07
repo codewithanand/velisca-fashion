@@ -5,28 +5,30 @@ import AdminLayout from '../layouts/AdminLayout';
 import AuthLayout from '../layouts/AuthLayout';
 import AdminRoute from '../components/admin/AdminRoute';
 
-const AdminLogin = lazy(() => import('../pages/admin/AdminLogin'));
-const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
-const AdminProducts = lazy(() => import('../pages/admin/AdminProducts'));
-const AdminProductForm = lazy(() => import('../pages/admin/AdminProductForm'));
-const AdminCategories = lazy(() => import('../pages/admin/AdminCategories'));
-const AdminOrders = lazy(() => import('../pages/admin/AdminOrders'));
-const AdminOrderDetails = lazy(() => import('../pages/admin/AdminOrderDetails'));
-const AdminUsers = lazy(() => import('../pages/users/UsersPage'));
-const AdminUserDetails = lazy(() => import('../pages/users/UserDetailsPage'));
-const AdminCreateUser = lazy(() => import('../pages/users/CreateUserPage'));
-const AdminEditUser = lazy(() => import('../pages/users/EditUserPage'));
-const AdminRoles = lazy(() => import('../pages/roles/RolesPage'));
-const AdminCreateRole = lazy(() => import('../pages/roles/CreateRolePage'));
-const AdminEditRole = lazy(() => import('../pages/roles/CreateRolePage'));
-const AdminPermissions = lazy(() => import('../pages/permissions/PermissionsPage'));
-const AdminPermissionGroups = lazy(() => import('../pages/permissions/PermissionGroupsPage'));
-const AdminInventory = lazy(() => import('../pages/admin/AdminInventory'));
-const AdminCoupons = lazy(() => import('../pages/admin/AdminCoupons'));
-const AdminBanners = lazy(() => import('../pages/admin/AdminBanners'));
-const AdminAnalytics = lazy(() => import('../pages/admin/AdminAnalytics'));
-const AdminNotifications = lazy(() => import('../pages/admin/AdminNotifications'));
-const AdminSettings = lazy(() => import('../pages/admin/AdminSettings'));
+const AdminLogin = lazy(() => import('../pages/admin/Login'));
+const AdminDashboard = lazy(() => import('../pages/admin/Dashboard'));
+const AdminProducts = lazy(() => import('../pages/admin/products/List'));
+const AdminProductForm = lazy(() => import('../pages/admin/products/Form'));
+const AdminCategories = lazy(() => import('../pages/admin/categories/List'));
+const AdminOrders = lazy(() => import('../pages/admin/orders/List'));
+const AdminOrderDetails = lazy(() => import('../pages/admin/orders/Details'));
+const AdminUsers = lazy(() => import('../pages/admin/users/List'));
+const AdminUserDetails = lazy(() => import('../pages/admin/users/Details'));
+const AdminCreateUser = lazy(() => import('../pages/admin/users/Create'));
+const AdminEditUser = lazy(() => import('../pages/admin/users/Edit'));
+const AdminRoles = lazy(() => import('../pages/admin/roles/List'));
+const AdminCreateRole = lazy(() => import('../pages/admin/roles/Form'));
+const AdminEditRole = lazy(() => import('../pages/admin/roles/Form'));
+const AdminPermissions = lazy(() => import('../pages/admin/permissions/List'));
+const AdminPermissionGroups = lazy(() => import('../pages/admin/permissions/Groups'));
+const AdminInventory = lazy(() => import('../pages/admin/products/Inventory'));
+const AdminReviews = lazy(() => import('../pages/admin/reviews/List'));
+const AdminCollections = lazy(() => import('../pages/admin/marketing/Collections'));
+const AdminCoupons = lazy(() => import('../pages/admin/marketing/Coupons'));
+const AdminBanners = lazy(() => import('../pages/admin/marketing/Banners'));
+const AdminAnalytics = lazy(() => import('../pages/admin/analytics/Index'));
+const AdminNotifications = lazy(() => import('../pages/admin/notifications/List'));
+const AdminSettings = lazy(() => import('../pages/admin/settings/Index'));
 
 export default function AdminRoutes() {
   return (
@@ -46,6 +48,7 @@ export default function AdminRoutes() {
         <Route element={<AdminRoute />}>
           <Route element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="products" element={<AdminProducts />} />
             <Route path="products/add" element={<AdminProductForm />} />
             <Route path="products/edit/:id" element={<AdminProductForm />} />
@@ -70,6 +73,8 @@ export default function AdminRoutes() {
             <Route path="permissions/groups" element={<AdminPermissionGroups />} />
 
             <Route path="inventory" element={<AdminInventory />} />
+            <Route path="reviews" element={<AdminReviews />} />
+            <Route path="collections" element={<AdminCollections />} />
             <Route path="coupons" element={<AdminCoupons />} />
             <Route path="banners" element={<AdminBanners />} />
             <Route path="analytics" element={<AdminAnalytics />} />

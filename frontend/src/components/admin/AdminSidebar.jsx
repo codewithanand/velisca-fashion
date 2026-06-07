@@ -16,6 +16,8 @@ import {
   Shield,
   ShieldCheck,
   Key,
+  Star,
+  MessageSquare,
 } from 'lucide-react';
 import { useAdmin } from '../../context/admin/AdminContext';
 import AdminBadge from './AdminBadge';
@@ -25,10 +27,12 @@ const allNavItems = [
   { path: '/admin/products', icon: Package, label: 'Products', roles: ['admin', 'staff'] },
   { path: '/admin/categories', icon: Layers, label: 'Categories', roles: ['admin', 'staff'] },
   { path: '/admin/orders', icon: ShoppingCart, label: 'Orders', roles: ['admin', 'staff'] },
+  { path: '/admin/inventory', icon: PackageOpen, label: 'Inventory', roles: ['admin', 'staff'] },
+  { path: '/admin/reviews', icon: MessageSquare, label: 'Reviews', roles: ['admin', 'staff'] },
+  { path: '/admin/collections', icon: Star, label: 'Collections', roles: ['admin', 'staff'] },
   { path: '/admin/users', icon: Users, label: 'Users', roles: ['admin', 'staff'] },
   { path: '/admin/roles', icon: ShieldCheck, label: 'Roles', roles: ['admin'] },
   { path: '/admin/permissions', icon: Key, label: 'Permissions', roles: ['admin'] },
-  { path: '/admin/inventory', icon: PackageOpen, label: 'Inventory', roles: ['admin', 'staff'] },
   { path: '/admin/coupons', icon: Percent, label: 'Coupons', roles: ['admin'] },
   { path: '/admin/banners', icon: Image, label: 'Banners', roles: ['admin', 'staff'] },
   { path: '/admin/analytics', icon: BarChart3, label: 'Analytics', roles: ['admin', 'staff'] },
@@ -52,9 +56,7 @@ export default function AdminSidebar() {
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-5 h-16 border-b border-border/50">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-white font-bold text-sm">V</span>
-          </div>
+          <img src="/logo.png" alt="Velisca" className="w-8 h-8 rounded-lg" />
           <div>
             <h2 className="text-sm font-bold text-text-primary">Velisca</h2>
             <p className="text-[10px] text-text-secondary -mt-0.5">Admin Panel</p>

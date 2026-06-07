@@ -10,11 +10,11 @@ const useUsersStore = create((set) => ({
     set({ loading: true });
     try {
       const res = await api.get('/admin/users', params);
-      const userData = res.data?.users;
+      const data = res.data;
       set({
-        users: userData?.data || userData || [],
-        pagination: userData?.data
-          ? { total: userData.total, page: userData.current_page, per_page: userData.per_page, last_page: userData.last_page }
+        users: data?.users?.data || data?.users || [],
+        pagination: data?.meta
+          ? { total: data.meta.total, page: data.meta.page, per_page: data.meta.per_page, last_page: data.meta.last_page }
           : { total: 0, page: 1, per_page: 20, last_page: 1 },
         loading: false,
       });

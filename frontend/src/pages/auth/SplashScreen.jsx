@@ -1,7 +1,20 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useAppContext } from '../context/AppContext'
+import { useAppContext } from '../../context/AppContext'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2, delayChildren: 0.1 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 24 } },
+}
 
 export default function SplashScreen() {
   const navigate = useNavigate()
@@ -28,7 +41,6 @@ export default function SplashScreen() {
       setTimeout(decide, remaining)
     }
 
-    // Fallback: navigate after 2.5s regardless
     const fallback = setTimeout(decide, 2500)
 
     return () => {
@@ -37,25 +49,35 @@ export default function SplashScreen() {
   }, [navigate, isAuthenticated, isAuthLoading])
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-secondary to-background flex items-center justify-center">
-      <div className="text-center">
+    <div className="min-h-screen bg-gradient-to-b from-secondary to-background flex flex-col">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="flex-1 flex flex-col items-center justify-center px-6"
+      >
+        <motion.div variants={itemVariants}>
+          <motion.img
+            src="/logo.png"
+            alt="Velisca"
+            className="w-24 h-24"
+            animate={{ scale: [1, 1.06, 1] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        </motion.div>
         <motion.h1
-          className="text-5xl md:text-6xl font-bold tracking-widest text-text-primary"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
+          variants={itemVariants}
+          className="text-5xl md:text-6xl font-bold tracking-widest text-text-primary mt-6"
         >
           VELISCA
         </motion.h1>
         <motion.p
-          className="text-text-secondary text-lg mt-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5, delay: 0.3 }}
+          variants={itemVariants}
+          className="text-text-secondary/70 text-lg mt-3 tracking-wide"
         >
           Wear Your Aura
         </motion.p>
-      </div>
+      </motion.div>
     </div>
   )
 }

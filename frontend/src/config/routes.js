@@ -3,7 +3,7 @@ import { lazy } from 'react';
 const routes = [
   {
     path: '/',
-    component: lazy(() => import('../pages/SplashScreen')),
+    component: lazy(() => import('../pages/auth/SplashScreen')),
     title: '',
     showBack: false,
     showBottomNav: false,
@@ -12,7 +12,7 @@ const routes = [
   },
   {
     path: '/onboarding',
-    component: lazy(() => import('../pages/OnboardingScreen')),
+    component: lazy(() => import('../pages/auth/OnboardingScreen')),
     title: '',
     showBack: false,
     showBottomNav: false,
@@ -21,7 +21,7 @@ const routes = [
   },
   {
     path: '/login',
-    component: lazy(() => import('../pages/LoginScreen')),
+    component: lazy(() => import('../pages/auth/LoginScreen')),
     title: 'Login',
     showBack: false,
     showBottomNav: false,
@@ -30,7 +30,7 @@ const routes = [
   },
   {
     path: '/signup',
-    component: lazy(() => import('../pages/SignupScreen')),
+    component: lazy(() => import('../pages/auth/SignupScreen')),
     title: 'Sign Up',
     showBack: false,
     showBottomNav: false,
@@ -39,7 +39,7 @@ const routes = [
   },
   {
     path: '/forgot-password',
-    component: lazy(() => import('../pages/ForgotPasswordScreen')),
+    component: lazy(() => import('../pages/auth/ForgotPasswordScreen')),
     title: 'Forgot Password',
     showBack: false,
     showBottomNav: false,
@@ -48,7 +48,7 @@ const routes = [
   },
   {
     path: '/reset-password',
-    component: lazy(() => import('../pages/ResetPasswordScreen')),
+    component: lazy(() => import('../pages/auth/ResetPasswordScreen')),
     title: 'Reset Password',
     showBack: false,
     showBottomNav: false,
@@ -57,7 +57,7 @@ const routes = [
   },
   {
     path: '/home',
-    component: lazy(() => import('../pages/HomeScreen')),
+    component: lazy(() => import('../pages/shop/HomeScreen')),
     title: 'Home',
     showBack: false,
     showBottomNav: true,
@@ -65,7 +65,7 @@ const routes = [
   },
   {
     path: '/search',
-    component: lazy(() => import('../pages/SearchScreen')),
+    component: lazy(() => import('../pages/shop/SearchScreen')),
     title: 'Search',
     showBack: false,
     showBottomNav: true,
@@ -73,7 +73,7 @@ const routes = [
   },
   {
     path: '/categories',
-    component: lazy(() => import('../pages/CategoriesScreen')),
+    component: lazy(() => import('../pages/shop/CategoriesScreen')),
     title: 'Categories',
     showBack: false,
     showBottomNav: true,
@@ -81,7 +81,7 @@ const routes = [
   },
   {
     path: '/wishlist',
-    component: lazy(() => import('../pages/WishlistScreen')),
+    component: lazy(() => import('../pages/profile/WishlistScreen')),
     title: 'My Wishlist',
     showBack: true,
     showBottomNav: true,
@@ -89,7 +89,7 @@ const routes = [
   },
   {
     path: '/cart',
-    component: lazy(() => import('../pages/CartScreen')),
+    component: lazy(() => import('../pages/cart/CartScreen')),
     title: 'Shopping Cart',
     showBack: true,
     showBottomNav: true,
@@ -97,7 +97,7 @@ const routes = [
   },
   {
     path: '/profile',
-    component: lazy(() => import('../pages/ProfileScreen')),
+    component: lazy(() => import('../pages/profile/ProfileScreen')),
     title: 'My Profile',
     showBack: true,
     showBottomNav: true,
@@ -105,7 +105,7 @@ const routes = [
   },
   {
     path: '/orders',
-    component: lazy(() => import('../pages/OrdersScreen')),
+    component: lazy(() => import('../pages/orders/OrdersScreen')),
     title: 'My Orders',
     showBack: true,
     showBottomNav: true,
@@ -113,15 +113,31 @@ const routes = [
   },
   {
     path: '/settings',
-    component: lazy(() => import('../pages/SettingsScreen')),
+    component: lazy(() => import('../pages/profile/SettingsScreen')),
     title: 'Settings',
     showBack: true,
     showBottomNav: true,
     showHeader: true,
   },
   {
+    path: '/orders/:id',
+    component: lazy(() => import('../pages/orders/OrderDetailsScreen')),
+    title: 'Order Details',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: false,
+  },
+  {
+    path: '/addresses',
+    component: lazy(() => import('../pages/profile/AddressesScreen')),
+    title: 'My Addresses',
+    showBack: true,
+    showBottomNav: false,
+    showHeader: true,
+  },
+  {
     path: '/checkout',
-    component: lazy(() => import('../pages/CheckoutScreen')),
+    component: lazy(() => import('../pages/cart/CheckoutScreen')),
     title: 'Checkout',
     showBack: true,
     showBottomNav: false,
@@ -129,7 +145,7 @@ const routes = [
   },
   {
     path: '/order-success',
-    component: lazy(() => import('../pages/OrderSuccessScreen')),
+    component: lazy(() => import('../pages/cart/OrderSuccessScreen')),
     title: 'Order Confirmed',
     showBack: false,
     showBottomNav: false,
@@ -137,7 +153,7 @@ const routes = [
   },
   {
     path: '/reels',
-    component: lazy(() => import('../pages/ReelsScreen')),
+    component: lazy(() => import('../pages/shop/ReelsScreen')),
     title: 'Reels',
     showBack: false,
     showBottomNav: false,
@@ -145,7 +161,7 @@ const routes = [
   },
   {
     path: '/gallery',
-    component: lazy(() => import('../pages/GalleryScreen')),
+    component: lazy(() => import('../pages/shop/GalleryScreen')),
     title: 'Inspiration',
     showBack: false,
     showBottomNav: false,
@@ -153,7 +169,7 @@ const routes = [
   },
   {
     path: '/products/:category',
-    component: lazy(() => import('../pages/ProductListingScreen')),
+    component: lazy(() => import('../pages/shop/ProductListingScreen')),
     title: 'Products',
     showBack: true,
     showBottomNav: true,
@@ -162,7 +178,7 @@ const routes = [
   },
   {
     path: '/product/:id',
-    component: lazy(() => import('../pages/ProductDetailsScreen')),
+    component: lazy(() => import('../pages/shop/ProductDetailsScreen')),
     title: 'Product',
     showBack: true,
     showBottomNav: false,

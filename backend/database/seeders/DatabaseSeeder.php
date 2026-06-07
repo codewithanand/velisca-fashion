@@ -15,69 +15,55 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // ========== Create Permissions ==========
         $permissionGroups = [
             'Users' => [
-                'view users',
-                'create users',
-                'edit users',
-                'delete users',
-                'block users',
-                'assign roles',
+                'view users', 'create users', 'edit users', 'delete users', 'block users', 'assign roles',
             ],
             'Products' => [
-                'view products',
-                'create products',
-                'edit products',
-                'delete products',
-                'manage inventory',
+                'view products', 'create products', 'edit products', 'delete products', 'manage inventory',
             ],
             'Orders' => [
-                'view orders',
-                'update orders',
-                'cancel orders',
-                'manage shipments',
+                'view orders', 'update orders', 'cancel orders', 'manage shipments',
+            ],
+            'Categories' => [
+                'view categories', 'create categories', 'edit categories', 'delete categories',
+            ],
+            'Reviews' => [
+                'view reviews', 'approve reviews', 'delete reviews',
             ],
             'Coupons' => [
-                'view coupons',
-                'create coupons',
-                'edit coupons',
-                'delete coupons',
+                'view coupons', 'create coupons', 'edit coupons', 'delete coupons',
             ],
             'Banners' => [
-                'view banners',
-                'create banners',
-                'edit banners',
-                'delete banners',
+                'view banners', 'create banners', 'edit banners', 'delete banners',
             ],
             'Analytics' => [
-                'view analytics',
-                'view reports',
+                'view analytics', 'view reports',
             ],
             'Settings' => [
-                'manage settings',
-                'manage roles',
-                'manage permissions',
+                'manage settings', 'manage roles', 'manage permissions',
             ],
         ];
 
         foreach ($permissionGroups as $group => $permissions) {
             foreach ($permissions as $permission) {
-                Permission::create(['name' => $permission, 'guard_name' => 'web']);
+                Permission::findOrCreate($permission, 'web');
             }
         }
 
         // ========== Create Roles ==========
-        $superAdmin = Role::create(['name' => 'Super Admin', 'guard_name' => 'web']);
+        $superAdmin = Role::findOrCreate('Super Admin', 'web');
         $superAdmin->givePermissionTo(Permission::all());
 
-        $admin = Role::create(['name' => 'Admin', 'guard_name' => 'web']);
+        $admin = Role::findOrCreate('Admin', 'web');
         $admin->givePermissionTo([
             'view users', 'create users', 'edit users', 'block users', 'assign roles',
             'view products', 'create products', 'edit products', 'delete products', 'manage inventory',
+            'view categories', 'create categories', 'edit categories', 'delete categories',
+            'view reviews', 'approve reviews', 'delete reviews',
             'view orders', 'update orders', 'cancel orders', 'manage shipments',
             'view coupons', 'create coupons', 'edit coupons', 'delete coupons',
             'view banners', 'create banners', 'edit banners', 'delete banners',
@@ -85,61 +71,134 @@ class DatabaseSeeder extends Seeder
             'manage settings',
         ]);
 
-        $manager = Role::create(['name' => 'Manager', 'guard_name' => 'web']);
+        $manager = Role::findOrCreate('Manager', 'web');
         $manager->givePermissionTo([
             'view users',
             'view products', 'create products', 'edit products', 'manage inventory',
+            'view categories', 'create categories', 'edit categories',
+            'view reviews', 'approve reviews',
             'view orders', 'update orders',
             'view analytics', 'view reports',
         ]);
 
-        $inventoryManager = Role::create(['name' => 'Inventory Manager', 'guard_name' => 'web']);
+        $inventoryManager = Role::findOrCreate('Inventory Manager', 'web');
         $inventoryManager->givePermissionTo([
             'view products', 'manage inventory',
         ]);
 
-        $orderManager = Role::create(['name' => 'Order Manager', 'guard_name' => 'web']);
+        $orderManager = Role::findOrCreate('Order Manager', 'web');
         $orderManager->givePermissionTo([
             'view orders', 'update orders', 'cancel orders', 'manage shipments',
         ]);
 
-        $customerSupport = Role::create(['name' => 'Customer Support', 'guard_name' => 'web']);
+        $customerSupport = Role::findOrCreate('Customer Support', 'web');
         $customerSupport->givePermissionTo([
             'view users',
             'view orders', 'update orders', 'cancel orders',
         ]);
 
-        $contentManager = Role::create(['name' => 'Content Manager', 'guard_name' => 'web']);
+        $contentManager = Role::findOrCreate('Content Manager', 'web');
         $contentManager->givePermissionTo([
             'view products', 'create products', 'edit products',
+            'view categories', 'create categories', 'edit categories',
             'view banners', 'create banners', 'edit banners', 'delete banners',
         ]);
 
-        $customer = Role::create(['name' => 'Customer', 'guard_name' => 'web']);
+        $customer = Role::findOrCreate('Customer', 'web');
         $customer->givePermissionTo([]);
 
         // ========== Create Users ==========
-        $adminUser = User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@velisca.com',
-            'password' => Hash::make('admin123'),
-            'role' => User::ROLE_ADMIN,
-        ]);
+        $adminUser = User::firstOrCreate(
+            ['email' => 'admin@velisca.com'],
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('admin123'),
+                'role' => User::ROLE_ADMIN,
+            ]
+        );
         $adminUser->assignRole('Super Admin');
 
-        $staffUser = User::factory()->create([
-            'name' => 'Staff',
-            'email' => 'staff@velisca.com',
-            'password' => Hash::make('staff123'),
-            'role' => User::ROLE_STAFF,
-        ]);
+        $staffUser = User::firstOrCreate(
+            ['email' => 'staff@velisca.com'],
+            [
+                'name' => 'Staff',
+                'password' => Hash::make('staff123'),
+                'role' => User::ROLE_STAFF,
+            ]
+        );
         $staffUser->assignRole('Admin');
 
-        $testUser = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'role' => User::ROLE_CUSTOMER,
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'role' => User::ROLE_CUSTOMER,
+            ]
+        )->assignRole('Customer');
+
+        // ========== Seed Demo Coupons ==========
+        $now = now();
+        $coupons = [
+            [
+                'code' => 'WELCOME20',
+                'type' => 'percentage',
+                'value' => 20,
+                'minimum_amount' => 999,
+                'maximum_discount' => 500,
+                'usage_limit' => 200,
+                'used_count' => 0,
+                'starts_at' => $now,
+                'expires_at' => $now->copy()->addMonths(3),
+                'status' => true,
+            ],
+            [
+                'code' => 'FLAT500',
+                'type' => 'flat',
+                'value' => 500,
+                'minimum_amount' => 2499,
+                'maximum_discount' => null,
+                'usage_limit' => 100,
+                'used_count' => 0,
+                'starts_at' => $now,
+                'expires_at' => $now->copy()->addMonths(2),
+                'status' => true,
+            ],
+            [
+                'code' => 'FREESHIP',
+                'type' => 'free_shipping',
+                'value' => 0,
+                'minimum_amount' => 499,
+                'maximum_discount' => null,
+                'usage_limit' => 500,
+                'used_count' => 0,
+                'starts_at' => $now,
+                'expires_at' => $now->copy()->addMonths(6),
+                'status' => true,
+            ],
+            [
+                'code' => 'SUMMER15',
+                'type' => 'percentage',
+                'value' => 15,
+                'minimum_amount' => 1499,
+                'maximum_discount' => 1000,
+                'usage_limit' => 150,
+                'used_count' => 0,
+                'starts_at' => $now,
+                'expires_at' => $now->copy()->addMonths(1),
+                'status' => true,
+            ],
+        ];
+
+        foreach ($coupons as $coupon) {
+            \App\Models\Coupon::firstOrCreate(
+                ['code' => $coupon['code']],
+                $coupon
+            );
+        }
+
+        // ========== Seed Product Data ==========
+        $this->call([
+            ProductSeeder::class,
         ]);
-        $testUser->assignRole('Customer');
     }
 }

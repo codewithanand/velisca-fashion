@@ -2,11 +2,11 @@ import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { SlidersHorizontal, ArrowUpDown, Star } from "lucide-react";
-import ProductCard from "../components/ui/ProductCard";
-import Button from "../components/ui/Button";
-import Modal from "../components/ui/Modal";
-import { useAppContext } from "../context/AppContext";
-import { products } from "../data/products";
+import ProductCard from "../../components/ui/ProductCard";
+import Button from "../../components/ui/Button";
+import Modal from "../../components/ui/Modal";
+import { useAppContext } from "../../context/AppContext";
+import { products } from "../../data/products";
 
 const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
@@ -110,21 +110,21 @@ export default function ProductListingScreen() {
   const uniqueCategories = [...new Set(products.map((p) => p.category))];
 
   return (
-    <div className="px-5 py-4">
+    <div className="min-h-screen bg-gradient-to-b from-secondary to-background"><div className="px-5 py-4 max-w-md mx-auto w-full">
       {/* Top Bar */}
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl font-bold text-text-primary">{categoryName}</h1>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFilterOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-secondary text-text-secondary text-sm font-medium hover:text-text-primary transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm text-text-secondary text-sm font-medium hover:text-text-primary hover:shadow-md transition-all duration-300"
           >
             <SlidersHorizontal size={16} />
             Filter
           </button>
           <button
             onClick={() => setSortOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-secondary text-text-secondary text-sm font-medium hover:text-text-primary transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm text-text-secondary text-sm font-medium hover:text-text-primary hover:shadow-md transition-all duration-300"
           >
             <ArrowUpDown size={16} />
             Sort
@@ -322,6 +322,6 @@ export default function ProductListingScreen() {
           ))}
         </div>
       </Modal>
-    </div>
+    </div></div>
   );
 }

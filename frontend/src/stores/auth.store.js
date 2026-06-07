@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import api, { setAccessToken, setRefreshToken, clearAuth } from '../services/api';
+import api, { setAccessToken, setRefreshToken, setTokenExpiry, clearAuth } from '../services/api';
 
 const useAuthStore = create((set, get) => ({
   user: JSON.parse(localStorage.getItem('admin') || 'null'),
@@ -17,11 +17,12 @@ const useAuthStore = create((set, get) => ({
     set({ loading: true });
     try {
       const res = await api.post('/auth/login', { email, password, device_name: 'admin-panel' });
-      const { user, access_token, refresh_token } = res.data;
+      const { user, access_token, refresh_token, expires_in } = res.data || {};
       setAccessToken(access_token);
       setRefreshToken(refresh_token);
+      if (expires_in) setTokenExpiry(expires_in);
       localStorage.setItem('admin', JSON.stringify(user));
-      set({ user, loading: false });
+      set({ user, permissions: user?.permissions || [], loading: false });
       return user;
     } catch (err) {
       set({ loading: false });
@@ -38,8 +39,8 @@ const useAuthStore = create((set, get) => ({
   fetchPermissions: async () => {
     try {
       const res = await api.get('/admin/me');
-      if (res.data?.user) {
-        const user = res.data.user;
+      const user = res.data?.user;
+      if (user) {
         set({ permissions: user.permissions || [] });
       }
     } catch {

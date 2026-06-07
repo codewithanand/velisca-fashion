@@ -8,42 +8,42 @@
     background: transparent;
   }
   .admin-scrollbar::-webkit-scrollbar-thumb {
-    background: #D8B4A0;
+    background: #C4957A;
     border-radius: 3px;
   }
   .admin-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #B08968;
+    background: #8B6F5A;
   }
 
   .glass-header {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(252, 249, 247, 0.85);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(234, 220, 214, 0.5);
+    border-bottom: 1px solid rgba(212, 192, 184, 0.5);
   }
 
   .sidebar-gradient {
-    background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F5 100%);
+    background: linear-gradient(180deg, #FCF9F7 0%, #FFEDE6 100%);
   }
 
   .stat-card-gradient {
-    background: linear-gradient(135deg, #FFF8F5 0%, #FFFFFF 100%);
+    background: linear-gradient(135deg, #FFEDE6 0%, #FCF9F7 100%);
   }
 
   .table-row-hover:hover {
-    background: rgba(216, 180, 160, 0.08);
+    background: rgba(196, 149, 122, 0.1);
   }
 
   .admin-card {
-    background: #FFFFFF;
-    border: 1px solid rgba(234, 220, 214, 0.6);
+    background: #FCF9F7;
+    border: 1px solid rgba(212, 192, 184, 0.6);
     border-radius: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.08);
   }
 
   .admin-card-hover:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-color: #D8B4A0;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    border-color: #C4957A;
   }
 
   .admin-input {
@@ -99,28 +99,28 @@
   }
 
   .dark .glass-header {
-    background: rgba(30, 30, 30, 0.8);
+    background: rgba(28, 28, 28, 0.85);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .dark .sidebar-gradient {
-    background: linear-gradient(180deg, #1E1E1E 0%, #252525 100%);
+    background: linear-gradient(180deg, #1C1C1C 0%, #222222 100%);
   }
 
   .dark .stat-card-gradient {
-    background: linear-gradient(135deg, #252525 0%, #1E1E1E 100%);
+    background: linear-gradient(135deg, #222222 0%, #1C1C1C 100%);
   }
 
   .dark .admin-card {
-    background: #252525;
+    background: #222222;
     border-color: rgba(255, 255, 255, 0.08);
   }
 
   .dark .admin-input,
   .dark .admin-select {
-    background: #1E1E1E;
+    background: #1C1C1C;
     border-color: rgba(255, 255, 255, 0.1);
-    color: #E0E0E0;
+    color: #D0D0D0;
   }
 
   @media (max-width: 768px) {
