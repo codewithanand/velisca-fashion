@@ -30,6 +30,26 @@ const AdminAnalytics = lazy(() => import('../pages/admin/analytics/Index'));
 const AdminNotifications = lazy(() => import('../pages/admin/notifications/List'));
 const AdminSettings = lazy(() => import('../pages/admin/settings/Index'));
 
+// Master Data routes
+const AdminAttributes = lazy(() => import('../pages/admin/attributes/List'));
+const AdminOrderStatuses = lazy(() => import('../pages/admin/orderStatuses/List'));
+const AdminPaymentMethods = lazy(() => import('../pages/admin/paymentMethods/List'));
+const AdminShipping = lazy(() => import('../pages/admin/shipping/List'));
+const AdminTaxes = lazy(() => import('../pages/admin/taxes/List'));
+const AdminLocations = lazy(() => import('../pages/admin/locations/List'));
+const AdminCouriers = lazy(() => import('../pages/admin/couriers/List'));
+const AdminReviewStatuses = lazy(() => import('../pages/admin/reviewStatuses/List'));
+const AdminWarehouses = lazy(() => import('../pages/admin/warehouses/List'));
+const AdminInventoryLogs = lazy(() => import('../pages/admin/inventoryLogs/List'));
+const AdminSeo = lazy(() => import('../pages/admin/seo/List'));
+const AdminMedia = lazy(() => import('../pages/admin/media/List'));
+const AdminNotificationTemplates = lazy(() => import('../pages/admin/notificationTemplates/List'));
+
+// Master Data: Brands, Colors, Sizes
+const AdminBrands = lazy(() => import('../pages/admin/brands/List'));
+const AdminColors = lazy(() => import('../pages/admin/colors/List'));
+const AdminSizes = lazy(() => import('../pages/admin/sizes/List'));
+
 export default function AdminRoutes() {
   return (
     <AdminProvider>
@@ -80,6 +100,24 @@ export default function AdminRoutes() {
             <Route path="analytics" element={<AdminAnalytics />} />
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="settings" element={<AdminSettings />} />
+
+            {/* Master Data Routes */}
+            <Route path="attributes" element={<AdminAttributes />} />
+            <Route path="order-statuses" element={<AdminOrderStatuses />} />
+            <Route path="payment-methods" element={<AdminPaymentMethods />} />
+            <Route path="shipping" element={<AdminShipping />} />
+            <Route path="taxes" element={<AdminTaxes />} />
+            <Route path="locations" element={<AdminLocations />} />
+            <Route path="couriers" element={<AdminCouriers />} />
+            <Route path="review-statuses" element={<AdminReviewStatuses />} />
+            <Route path="warehouses" element={<AdminWarehouses />} />
+            <Route path="inventory-logs" element={<AdminInventoryLogs />} />
+            <Route path="seo" element={<AdminSeo />} />
+            <Route path="media" element={<AdminMedia />} />
+            <Route path="notification-templates" element={<AdminNotificationTemplates />} />
+            <Route path="brands" element={<AdminBrands />} />
+            <Route path="colors" element={<AdminColors />} />
+            <Route path="sizes" element={<AdminSizes />} />
           </Route>
         </Route>
 

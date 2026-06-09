@@ -11,6 +11,7 @@ import AdminConfirmDialog from '../../../components/admin/AdminConfirmDialog';
 import AdminLoader from '../../../components/admin/AdminLoader';
 import AdminEmptyState from '../../../components/admin/AdminEmptyState';
 import PermissionGuard from '../../../components/auth/PermissionGuard';
+import useFormValidation from '../../../hooks/useFormValidation';
 import usePermissionsStore from '../../../stores/permissions.store';
 
 export default function PermissionsPage() {
@@ -19,6 +20,13 @@ export default function PermissionsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const rules = {
+    name: [
+      { required: true },
+      { pattern: /^[a-z]+\s[a-z]+(\s[a-z]+)*$/, message: 'Use format: action subject (e.g. view products)' },
+    ],
+  };
+  const { errors, validate, clearErrors, clearField } = useFormValidation(rules);
 
   useEffect(() => { fetchPermissions(); }, [fetchPermissions]);
 
@@ -35,7 +43,7 @@ export default function PermissionsPage() {
   }, {});
 
   const handleCreate = async () => {
-    if (!newName.trim()) return;
+    if (!validate({ name: newName })) return;
     try {
       await createPermission(newName.trim());
       setNewName('');
@@ -65,7 +73,7 @@ export default function PermissionsPage() {
           <p className="text-sm text-text-secondary">{permissions.length} permissions configured</p>
         </div>
         <PermissionGuard permission="manage permissions">
-          <AdminButton onClick={() => setShowCreate(true)}>
+          <AdminButton onClick={() => { clearErrors(); setShowCreate(true); }}>
             <Plus size={16} />
             Add Permission
           </AdminButton>
@@ -124,23 +132,24 @@ export default function PermissionsPage() {
         )}
       </AdminCard>
 
-      <AdminModal isOpen={showCreate} onClose={() => { setShowCreate(false); setNewName(''); }} title="Add Permission" size="sm">
+      <AdminModal isOpen={showCreate} onClose={() => { clearErrors(); setShowCreate(false); setNewName(''); }} title="Add Permission" size="sm">
         <div className="space-y-4">
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-text-primary">Permission Name</label>
             <input
               type="text"
               value={newName}
-              onChange={(e) => setNewName(e.target.value)}
+              onChange={(e) => { setNewName(e.target.value); clearField('name'); }}
               placeholder="e.g. view reports"
-              className="admin-input"
+              className={`admin-input ${errors.name ? 'border-danger' : ''}`}
               onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); }}
             />
+            {errors.name && <span className="text-xs text-danger">{errors.name}</span>}
             <p className="text-xs text-text-secondary">Use format: <code className="bg-secondary px-1 rounded">action subject</code></p>
           </div>
           <div className="flex justify-end gap-2">
-            <AdminButton variant="ghost" onClick={() => { setShowCreate(false); setNewName(''); }}>Cancel</AdminButton>
-            <AdminButton onClick={handleCreate} disabled={!newName.trim()}>Create</AdminButton>
+            <AdminButton variant="ghost" onClick={() => { clearErrors(); setShowCreate(false); setNewName(''); }}>Cancel</AdminButton>
+            <AdminButton onClick={handleCreate}>Create</AdminButton>
           </div>
         </div>
       </AdminModal>

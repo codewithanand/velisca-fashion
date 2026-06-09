@@ -9,6 +9,7 @@ import AdminButton from '../../../components/admin/AdminButton';
 import AdminBadge from '../../../components/admin/AdminBadge';
 import api from '../../../services/api';
 import useProductsStore from '../../../stores/products.store';
+import useFormValidation from '../../../hooks/useFormValidation';
 
 const statusOptions = [
   { value: 'draft', label: 'Draft' },
@@ -46,9 +47,26 @@ export default function AdminProductForm() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagSearch, setTagSearch] = useState('');
 
+  const rules = {
+    name: [{ required: true }, { minLength: 2 }],
+    slug: [{ slug: true }],
+    price: [{ required: true }, { numeric: true }, { min: 0 }],
+    sale_price: [{ numeric: true }, { min: 0 }],
+    cost_price: [{ numeric: true }, { min: 0 }],
+    sku: [{ required: true }],
+    stock: [{ numeric: true }, { min: 0 }],
+    weight: [{ numeric: true }, { min: 0 }],
+    category_id: [{ required: true }],
+    brand_id: [{ required: true }],
+    seo_title: [{ maxLength: 70 }],
+    seo_description: [{ maxLength: 160 }],
+  };
+  const { errors, validate, clearErrors, clearField, setErrors } = useFormValidation(rules);
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
+      clearErrors();
       try {
         const [catRes, brandRes, colorRes, sizeRes, tagRes] = await Promise.all([
           api.get('/admin/categories'),
@@ -74,6 +92,7 @@ export default function AdminProductForm() {
         try {
           const product = await fetchProduct(id);
           if (product) {
+            clearErrors();
             setForm({
               name: product.name || '',
               slug: product.slug || '',
@@ -164,6 +183,11 @@ export default function AdminProductForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validate(form)) return;
+    if (images.length === 0) {
+      setErrors((prev) => ({ ...prev, images: 'At least one image is required' }));
+      return;
+    }
     setSaving(true);
     try {
       const data = {
@@ -232,7 +256,7 @@ export default function AdminProductForm() {
         <AdminCard>
           <h3 className="text-sm font-semibold text-text-primary mb-4">Basic Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <AdminInput label="Product Name" value={form.name} onChange={handleChange('name')} placeholder="Enter product name" required />
+            <AdminInput label="Product Name" value={form.name} onChange={handleChange('name')} placeholder="Enter product name" required error={errors.name} />
             <AdminInput label="Slug" value={form.slug} onChange={handleChange('slug')} placeholder="auto-generated" />
           </div>
           <div className="mt-4">
@@ -275,7 +299,7 @@ export default function AdminProductForm() {
         <AdminCard>
           <h3 className="text-sm font-semibold text-text-primary mb-4">Pricing</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <AdminInput label="Price (₹)" type="number" value={form.price} onChange={handleChange('price')} placeholder="0" required />
+            <AdminInput label="Price (₹)" type="number" value={form.price} onChange={handleChange('price')} placeholder="0" required error={errors.price} />
             <AdminInput label="Sale Price (₹)" type="number" value={form.sale_price} onChange={handleChange('sale_price')} placeholder="0" />
             <AdminInput label="Cost Price (₹)" type="number" value={form.cost_price} onChange={handleChange('cost_price')} placeholder="0" />
           </div>
@@ -285,13 +309,13 @@ export default function AdminProductForm() {
         <AdminCard>
           <h3 className="text-sm font-semibold text-text-primary mb-4">Inventory</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <AdminInput label="SKU" value={form.sku} onChange={handleChange('sku')} placeholder="e.g. VLC-001" />
-            <AdminInput label="Stock Quantity" type="number" value={form.stock} onChange={handleChange('stock')} placeholder="0" />
+            <AdminInput label="SKU" value={form.sku} onChange={handleChange('sku')} placeholder="e.g. VLC-001" error={errors.sku} />
+            <AdminInput label="Stock Quantity" type="number" value={form.stock} onChange={handleChange('stock')} placeholder="0" error={errors.stock} />
             <AdminInput label="Low Stock Threshold" type="number" value={form.low_stock_threshold} onChange={handleChange('low_stock_threshold')} placeholder="10" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <AdminSelect label="Category" value={form.category_id} onChange={handleChange('category_id')} options={categories.map((c) => ({ value: c.id, label: c.name }))} placeholder="Select category" />
-            <AdminSelect label="Brand" value={form.brand_id} onChange={handleChange('brand_id')} options={brands.map((b) => ({ value: b.id, label: b.name }))} placeholder="Select brand" />
+            <AdminSelect label="Category" value={form.category_id} onChange={handleChange('category_id')} options={categories.map((c) => ({ value: c.id, label: c.name }))} placeholder="Select category" error={errors.category_id} />
+            <AdminSelect label="Brand" value={form.brand_id} onChange={handleChange('brand_id')} options={brands.map((b) => ({ value: b.id, label: b.name }))} placeholder="Select brand" error={errors.brand_id} />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <AdminInput label="Weight (kg)" type="number" value={form.weight} onChange={handleChange('weight')} placeholder="0" />

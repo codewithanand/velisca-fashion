@@ -22,6 +22,14 @@ class BrandController extends Controller
         return $this->success('Brands retrieved', ['brands' => $brands]);
     }
 
+    public function show($id)
+    {
+        $brand = Brand::withCount('products')->find($id);
+        if (!$brand) return $this->notFound('Brand not found');
+
+        return $this->success('Brand retrieved', ['brand' => $brand]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -29,15 +37,21 @@ class BrandController extends Controller
             'slug' => 'nullable|string|max:255|unique:brands,slug',
             'description' => 'nullable|string',
             'logo' => 'nullable|string',
+            'banner' => 'nullable|string',
             'website' => 'nullable|string|url',
+            'featured' => 'nullable|boolean',
+            'sort_order' => 'nullable|integer|min:0',
             'status' => 'nullable|boolean',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string',
+            'seo_keywords' => 'nullable|string',
         ]);
 
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
         $validated['created_by'] = auth()->id();
         $brand = Brand::create($validated);
 
-        return $this->success('Brand created', ['brand' => $brand], 201);
+        return $this->success('Brand created', ['brand' => $brand->loadCount('products')], 201);
     }
 
     public function update(Request $request, $id)
@@ -50,8 +64,14 @@ class BrandController extends Controller
             'slug' => 'sometimes|string|max:255|unique:brands,slug,' . $id,
             'description' => 'nullable|string',
             'logo' => 'nullable|string',
+            'banner' => 'nullable|string',
             'website' => 'nullable|string|url',
+            'featured' => 'nullable|boolean',
+            'sort_order' => 'nullable|integer|min:0',
             'status' => 'nullable|boolean',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string',
+            'seo_keywords' => 'nullable|string',
         ]);
 
         if (isset($validated['name']) && !isset($validated['slug'])) {
@@ -60,7 +80,7 @@ class BrandController extends Controller
 
         $brand->update($validated);
 
-        return $this->success('Brand updated', ['brand' => $brand]);
+        return $this->success('Brand updated', ['brand' => $brand->loadCount('products')]);
     }
 
     public function destroy($id)

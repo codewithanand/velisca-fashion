@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Color;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ColorController extends Controller
 {
@@ -22,10 +23,14 @@ class ColorController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:colors,slug',
             'hex_code' => 'nullable|string|max:7',
+            'color_family' => 'nullable|string|max:255',
+            'sort_order' => 'nullable|integer|min:0',
             'status' => 'nullable|boolean',
         ]);
 
+        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
         $color = Color::create($validated);
 
         return $this->success('Color created', ['color' => $color], 201);
@@ -38,7 +43,10 @@ class ColorController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
+            'slug' => 'sometimes|string|max:255|unique:colors,slug,' . $id,
             'hex_code' => 'nullable|string|max:7',
+            'color_family' => 'nullable|string|max:255',
+            'sort_order' => 'nullable|integer|min:0',
             'status' => 'nullable|boolean',
         ]);
 

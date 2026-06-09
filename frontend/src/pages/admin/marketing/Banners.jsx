@@ -1,43 +1,89 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Image, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { Plus, Edit3, Trash2, Image, Eye, EyeOff } from 'lucide-react';
 import AdminCard from '../../../components/admin/AdminCard';
 import AdminButton from '../../../components/admin/AdminButton';
 import AdminModal from '../../../components/admin/AdminModal';
 import AdminInput from '../../../components/admin/AdminInput';
+import AdminSelect from '../../../components/admin/AdminSelect';
 import AdminBadge from '../../../components/admin/AdminBadge';
 import AdminConfirmDialog from '../../../components/admin/AdminConfirmDialog';
 import AdminEmptyState from '../../../components/admin/AdminEmptyState';
+import PermissionGuard from '../../../components/auth/PermissionGuard';
+import useBannersStore from '../../../stores/banners.store';
 
-const initialBanners = [
-  { id: 1, title: 'Summer Collection 2024', subtitle: 'Discover the latest trends', active: true, order: 1 },
-  { id: 2, title: 'Resin Art Masterpieces', subtitle: 'Handcrafted with love', active: true, order: 2 },
-  { id: 3, title: 'New Accessories', subtitle: 'Complete your look', active: false, order: 3 },
-];
+const typeBadge = {
+  hero: 'primary',
+  offer: 'success',
+  category: 'info',
+  collection: 'warning',
+  popup: 'danger',
+};
 
 export default function AdminBanners() {
-  const [banners, setBanners] = useState(initialBanners);
+  const { banners, loading, fetchBanners, createBanner, updateBanner, deleteBanner } = useBannersStore();
   const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const [form, setForm] = useState({ title: '', subtitle: '' });
+  const [form, setForm] = useState({
+    title: '', type: 'hero', image: '', mobile_image: '', link: '', button_text: '',
+    sort_order: 0, start_date: '', end_date: '', status: true,
+  });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { fetchBanners(); }, [fetchBanners]);
 
   const openAdd = () => {
-    setForm({ title: '', subtitle: '' });
+    setEditing(null);
+    setForm({ title: '', type: 'hero', image: '', mobile_image: '', link: '', button_text: '', sort_order: 0, start_date: '', end_date: '', status: true });
     setModalOpen(true);
   };
 
-  const handleSave = () => {
-    setBanners([...banners, { ...form, id: Date.now(), active: true, order: banners.length + 1 }]);
-    setModalOpen(false);
+  const openEdit = (b) => {
+    setEditing(b);
+    setForm({
+      title: b.title || '',
+      type: b.type || 'hero',
+      image: b.image || '',
+      mobile_image: b.mobile_image || '',
+      link: b.link || '',
+      button_text: b.button_text || '',
+      sort_order: b.sort_order || 0,
+      start_date: b.start_date || '',
+      end_date: b.end_date || '',
+      status: b.status ?? true,
+    });
+    setModalOpen(true);
   };
 
-  const toggleActive = (id) => {
-    setBanners(banners.map((b) => b.id === id ? { ...b, active: !b.active } : b));
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      if (editing) {
+        await updateBanner(editing.id, form);
+      } else {
+        await createBanner(form);
+      }
+      setModalOpen(false);
+      fetchBanners();
+    } catch { /* ignore */ }
+    setSaving(false);
   };
 
-  const handleDelete = () => {
-    setBanners(banners.filter((b) => b.id !== deleteConfirm.id));
+  const handleDelete = async () => {
+    await deleteBanner(deleteConfirm.id);
     setDeleteConfirm(null);
+    fetchBanners();
+  };
+
+  const handleChange = (field) => (e) => {
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setForm({ ...form, [field]: value });
+  };
+
+  const toggleStatus = async (banner) => {
+    await updateBanner(banner.id, { ...banner, status: !banner.status });
+    fetchBanners();
   };
 
   return (
@@ -45,62 +91,121 @@ export default function AdminBanners() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-text-primary">Banners</h1>
-          <p className="text-sm text-text-secondary">{banners.length} banners • {banners.filter((b) => b.active).length} active</p>
+          <p className="text-sm text-text-secondary">{banners.length} banners • {banners.filter((b) => b.status).length} active</p>
         </div>
-        <AdminButton onClick={openAdd}>
-          <Plus size={16} />
-          Add Banner
-        </AdminButton>
+        <PermissionGuard permission="create banners">
+          <AdminButton onClick={openAdd}>
+            <Plus size={16} /> Add Banner
+          </AdminButton>
+        </PermissionGuard>
       </div>
 
-      {banners.length === 0 ? (
+      {banners.length === 0 && !loading ? (
         <AdminCard>
-          <AdminEmptyState icon={Image} title="No banners yet" description="Add banners to display on the homepage." actionLabel="Add Banner" onAction={openAdd} />
+          <AdminEmptyState icon={Image} title="No banners yet" description="Create your first banner to display on the homepage." actionLabel="Add Banner" onAction={openAdd} />
         </AdminCard>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {banners.map((banner) => (
-            <motion.div key={banner.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="admin-card p-5">
-              <div className="w-full h-36 rounded-xl bg-secondary mb-4 flex items-center justify-center">
-                <Image size={32} className="text-text-secondary" />
+            <motion.div key={banner.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="admin-card p-5 group">
+              <div className="w-full h-36 rounded-xl bg-secondary overflow-hidden flex items-center justify-center mb-4">
+                {banner.image ? (
+                  <img src={banner.image} alt={banner.title} className="w-full h-full object-cover" />
+                ) : (
+                  <Image size={32} className="text-text-secondary" />
+                )}
               </div>
               <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h3 className="text-sm font-semibold text-text-primary">{banner.title}</h3>
-                  <p className="text-xs text-text-secondary">{banner.subtitle}</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-semibold text-text-primary truncate">{banner.title}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <AdminBadge variant={typeBadge[banner.type] || 'default'} className="text-[10px]">
+                      {banner.type}
+                    </AdminBadge>
+                    <span className="text-xs text-text-secondary">Order: #{banner.sort_order}</span>
+                  </div>
                 </div>
-                <AdminBadge variant={banner.active ? 'success' : 'danger'}>
-                  {banner.active ? 'Active' : 'Inactive'}
+                <AdminBadge variant={banner.status ? 'success' : 'danger'} className="text-[10px] shrink-0 ml-2">
+                  {banner.status ? 'Active' : 'Inactive'}
                 </AdminBadge>
               </div>
-              <p className="text-xs text-text-secondary">Order: #{banner.order}</p>
-              <div className="flex gap-1 mt-3">
-                <button onClick={() => toggleActive(banner.id)} className={`p-1.5 rounded-lg transition-colors ${banner.active ? 'hover:bg-amber-50' : 'hover:bg-green-50'}`}>
-                  {banner.active ? <EyeOff size={14} className="text-warning" /> : <Eye size={14} className="text-success" />}
+              {(banner.start_date || banner.end_date) && (
+                <p className="text-[10px] text-text-secondary mt-1">
+                  {banner.start_date && `From ${new Date(banner.start_date).toLocaleDateString()}`}
+                  {banner.start_date && banner.end_date && ' '}
+                  {banner.end_date && `To ${new Date(banner.end_date).toLocaleDateString()}`}
+                </p>
+              )}
+              <div className="flex items-center gap-1 mt-3 pt-3 border-t border-border/30">
+                <button onClick={() => toggleStatus(banner)}
+                  className={`p-1.5 rounded-lg transition-colors ${banner.status ? 'hover:bg-amber-50' : 'hover:bg-green-50'}`}>
+                  {banner.status ? <EyeOff size={14} className="text-warning" /> : <Eye size={14} className="text-success" />}
                 </button>
-                <button onClick={() => setDeleteConfirm(banner)} className="p-1.5 rounded-lg hover:bg-red-50"><Trash2 size={14} className="text-danger" /></button>
+                <PermissionGuard permission="edit banners">
+                  <button onClick={() => openEdit(banner)} className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
+                    <Edit3 size={14} className="text-text-secondary" />
+                  </button>
+                </PermissionGuard>
+                <PermissionGuard permission="delete banners">
+                  <button onClick={() => setDeleteConfirm(banner)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors">
+                    <Trash2 size={14} className="text-danger" />
+                  </button>
+                </PermissionGuard>
               </div>
             </motion.div>
           ))}
         </div>
       )}
 
-      <AdminModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add Banner">
+      <AdminModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Banner' : 'Add Banner'} size="lg">
         <div className="space-y-4">
-          <div className="w-full h-40 rounded-xl bg-secondary border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary">
-            <Image size={24} className="text-text-secondary mb-1" />
-            <span className="text-sm text-text-secondary">Click to upload banner image</span>
+          <AdminInput label="Title" value={form.title} onChange={handleChange('title')} placeholder="Banner title" required />
+          <div className="grid grid-cols-2 gap-4">
+            <AdminSelect label="Type" value={form.type} onChange={handleChange('type')} options={[
+              { value: 'hero', label: 'Hero' },
+              { value: 'offer', label: 'Offer' },
+              { value: 'category', label: 'Category' },
+              { value: 'collection', label: 'Collection' },
+              { value: 'popup', label: 'Popup' },
+            ]} />
+            <AdminInput label="Sort Order" type="number" value={form.sort_order} onChange={handleChange('sort_order')} placeholder="0" />
           </div>
-          <AdminInput label="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Banner title" />
-          <AdminInput label="Subtitle" value={form.subtitle} onChange={(e) => setForm({ ...form, subtitle: e.target.value })} placeholder="Banner subtitle" />
+          <div className="grid grid-cols-2 gap-4">
+            <AdminInput label="Image URL" value={form.image} onChange={handleChange('image')} placeholder="https://..." />
+            <AdminInput label="Mobile Image URL" value={form.mobile_image} onChange={handleChange('mobile_image')} placeholder="https://..." />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <AdminInput label="Link URL" value={form.link} onChange={handleChange('link')} placeholder="https://..." />
+            <AdminInput label="Button Text" value={form.button_text} onChange={handleChange('button_text')} placeholder="Shop Now" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <AdminInput label="Start Date" type="date" value={form.start_date} onChange={handleChange('start_date')} />
+            <AdminInput label="End Date" type="date" value={form.end_date} onChange={handleChange('end_date')} />
+          </div>
+          <div className="flex items-center gap-2 pt-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={form.status} onChange={handleChange('status')} className="accent-primary w-4 h-4" />
+              <span className="text-sm text-text-primary">Active</span>
+            </label>
+          </div>
           <div className="flex justify-end gap-3 pt-2">
             <AdminButton variant="ghost" onClick={() => setModalOpen(false)}>Cancel</AdminButton>
-            <AdminButton onClick={handleSave}>Save</AdminButton>
+            <AdminButton onClick={handleSave} disabled={saving}>
+              {saving ? 'Saving...' : editing ? 'Update' : 'Create'}
+            </AdminButton>
           </div>
         </div>
       </AdminModal>
 
-      <AdminConfirmDialog isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} onConfirm={handleDelete} title="Delete Banner" message={`Delete "${deleteConfirm?.title}"?`} confirmLabel="Delete" />
+      <AdminConfirmDialog
+        isOpen={!!deleteConfirm}
+        onClose={() => setDeleteConfirm(null)}
+        onConfirm={handleDelete}
+        title="Delete Banner"
+        message={`Are you sure you want to delete "${deleteConfirm?.title}"?`}
+        confirmLabel="Delete"
+        variant="danger"
+      />
     </motion.div>
   );
 }

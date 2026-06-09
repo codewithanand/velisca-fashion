@@ -11,6 +11,7 @@ import AdminConfirmDialog from '../../../components/admin/AdminConfirmDialog';
 import AdminEmptyState from '../../../components/admin/AdminEmptyState';
 import AdminBadge from '../../../components/admin/AdminBadge';
 import PermissionGuard from '../../../components/auth/PermissionGuard';
+import useFormValidation from '../../../hooks/useFormValidation';
 import useCategoriesStore from '../../../stores/categories.store';
 
 export default function AdminCategories() {
@@ -24,12 +25,17 @@ export default function AdminCategories() {
     status: true, featured: false, sort_order: 0,
   });
   const [saving, setSaving] = useState(false);
+  const { errors, validate, clearErrors, clearField } = useFormValidation({
+    name: [{ required: true }],
+    sort_order: [{ numeric: true }, { min: 0 }],
+  });
 
   useEffect(() => { fetchCategories({ parents_only: false }); }, [fetchCategories]);
 
   const openAdd = () => {
     setEditing(null);
     setForm({ name: '', slug: '', parent_id: '', description: '', image: '', banner: '', status: true, featured: false, sort_order: 0 });
+    clearErrors();
     setModalOpen(true);
   };
 
@@ -46,10 +52,12 @@ export default function AdminCategories() {
       featured: cat.featured || false,
       sort_order: cat.sort_order || 0,
     });
+    clearErrors();
     setModalOpen(true);
   };
 
   const handleSave = async () => {
+    if (!validate(form)) return;
     setSaving(true);
     try {
       if (editing) {
@@ -72,6 +80,7 @@ export default function AdminCategories() {
   const handleChange = (field) => (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setForm({ ...form, [field]: value });
+    clearField(field);
   };
 
   return (
@@ -138,7 +147,7 @@ export default function AdminCategories() {
       <AdminModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Category' : 'Add Category'} size="md">
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <AdminInput label="Category Name" value={form.name} onChange={handleChange('name')} placeholder="Enter category name" required />
+            <AdminInput label="Category Name" value={form.name} onChange={handleChange('name')} placeholder="Enter category name" required error={errors.name} />
             <AdminInput label="Slug" value={form.slug} onChange={handleChange('slug')} placeholder="auto-generated" />
           </div>
           <AdminSelect label="Parent Category" value={form.parent_id} onChange={handleChange('parent_id')} options={[
@@ -154,7 +163,7 @@ export default function AdminCategories() {
             <AdminInput label="Banner URL" value={form.banner} onChange={handleChange('banner')} placeholder="https://..." />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <AdminInput label="Sort Order" type="number" value={form.sort_order} onChange={handleChange('sort_order')} placeholder="0" />
+            <AdminInput label="Sort Order" type="number" value={form.sort_order} onChange={handleChange('sort_order')} placeholder="0" error={errors.sort_order} />
             <div className="flex items-center gap-6 pt-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={form.status} onChange={handleChange('status')} className="accent-primary w-4 h-4" />

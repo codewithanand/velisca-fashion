@@ -22,7 +22,13 @@ class SizeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'nullable|string',
+            'code' => 'nullable|string|max:50',
+            'international_size' => 'nullable|string|max:50',
+            'size_group' => 'nullable|string|max:255',
+            'chest' => 'nullable|string|max:50',
+            'waist' => 'nullable|string|max:50',
+            'hips' => 'nullable|string|max:50',
+            'length' => 'nullable|string|max:50',
             'sort_order' => 'nullable|integer|min:0',
             'status' => 'nullable|boolean',
         ]);
@@ -39,7 +45,13 @@ class SizeController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'category' => 'nullable|string',
+            'code' => 'nullable|string|max:50',
+            'international_size' => 'nullable|string|max:50',
+            'size_group' => 'nullable|string|max:255',
+            'chest' => 'nullable|string|max:50',
+            'waist' => 'nullable|string|max:50',
+            'hips' => 'nullable|string|max:50',
+            'length' => 'nullable|string|max:50',
             'sort_order' => 'nullable|integer|min:0',
             'status' => 'nullable|boolean',
         ]);

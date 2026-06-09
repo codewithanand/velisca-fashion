@@ -43,6 +43,9 @@ class DatabaseSeeder extends Seeder
             'Analytics' => [
                 'view analytics', 'view reports',
             ],
+            'Masters' => [
+                'manage brands', 'manage colors', 'manage sizes',
+            ],
             'Settings' => [
                 'manage settings', 'manage roles', 'manage permissions',
             ],
@@ -68,6 +71,7 @@ class DatabaseSeeder extends Seeder
             'view coupons', 'create coupons', 'edit coupons', 'delete coupons',
             'view banners', 'create banners', 'edit banners', 'delete banners',
             'view analytics', 'view reports',
+            'manage brands', 'manage colors', 'manage sizes',
             'manage settings',
         ]);
 

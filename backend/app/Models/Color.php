@@ -8,7 +8,17 @@ class Color extends Model
 {
     protected $fillable = [
         'name',
+        'slug',
         'hex_code',
+        'color_family',
+        'sort_order',
         'status',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => 'boolean',
+        ];
+    }
 }

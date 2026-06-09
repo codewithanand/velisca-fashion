@@ -2,23 +2,37 @@
 
 use App\Http\Controllers\API\Admin\ActivityLogController;
 use App\Http\Controllers\API\Admin\AnalyticsController;
+use App\Http\Controllers\API\Admin\AttributeController;
+use App\Http\Controllers\API\Admin\AttributeValueController;
 use App\Http\Controllers\API\Admin\BannerController;
 use App\Http\Controllers\API\Admin\BrandController;
 use App\Http\Controllers\API\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\API\Admin\CollectionController;
 use App\Http\Controllers\API\Admin\ColorController;
 use App\Http\Controllers\API\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\API\Admin\CourierController;
 use App\Http\Controllers\API\Admin\DashboardController;
+use App\Http\Controllers\API\Admin\InventoryLogController;
+use App\Http\Controllers\API\Admin\LocationController;
+use App\Http\Controllers\API\Admin\MediaController;
 use App\Http\Controllers\API\Admin\NotificationController;
+use App\Http\Controllers\API\Admin\NotificationTemplateController;
 use App\Http\Controllers\API\Admin\AdminOrderController;
+use App\Http\Controllers\API\Admin\OrderStatusController;
+use App\Http\Controllers\API\Admin\PaymentMethodController;
 use App\Http\Controllers\API\Admin\PermissionController;
 use App\Http\Controllers\API\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\API\Admin\ReviewController;
+use App\Http\Controllers\API\Admin\ReviewStatusController;
 use App\Http\Controllers\API\Admin\RoleController;
-use App\Http\Controllers\API\Admin\SettingsController;
+use App\Http\Controllers\API\Admin\SeoController;
+use App\Http\Controllers\API\Admin\SettingController;
+use App\Http\Controllers\API\Admin\ShippingController;
 use App\Http\Controllers\API\Admin\SizeController;
 use App\Http\Controllers\API\Admin\TagController;
+use App\Http\Controllers\API\Admin\TaxController;
 use App\Http\Controllers\API\Admin\UserController;
+use App\Http\Controllers\API\Admin\WarehouseController;
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Auth\PasswordController;
 use App\Http\Controllers\API\Auth\RefreshTokenController;
@@ -174,12 +188,133 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:' . implode(',', [
     Route::delete('/coupons/{id}', [AdminCouponController::class, 'destroy']);
     Route::put('/coupons/{id}/toggle', [AdminCouponController::class, 'toggle']);
 
+    // Master Data Management Routes
+
+    // Attributes
+    Route::get('/attributes', [AttributeController::class, 'index']);
+    Route::post('/attributes', [AttributeController::class, 'store']);
+    Route::get('/attributes/{id}', [AttributeController::class, 'show']);
+    Route::put('/attributes/{id}', [AttributeController::class, 'update']);
+    Route::delete('/attributes/{id}', [AttributeController::class, 'destroy']);
+
+    // Attribute Values
+    Route::get('/attribute-values', [AttributeValueController::class, 'index']);
+    Route::post('/attribute-values', [AttributeValueController::class, 'store']);
+    Route::put('/attribute-values/{id}', [AttributeValueController::class, 'update']);
+    Route::delete('/attribute-values/{id}', [AttributeValueController::class, 'destroy']);
+
     // Banners
     Route::get('/banners', [BannerController::class, 'index']);
     Route::post('/banners', [BannerController::class, 'store']);
+    Route::get('/banners/{id}', [BannerController::class, 'show']);
     Route::put('/banners/{id}', [BannerController::class, 'update']);
     Route::delete('/banners/{id}', [BannerController::class, 'destroy']);
     Route::put('/banners/{id}/toggle', [BannerController::class, 'toggle']);
+
+    // Order Statuses
+    Route::get('/order-statuses', [OrderStatusController::class, 'index']);
+    Route::post('/order-statuses', [OrderStatusController::class, 'store']);
+    Route::get('/order-statuses/{id}', [OrderStatusController::class, 'show']);
+    Route::put('/order-statuses/{id}', [OrderStatusController::class, 'update']);
+    Route::delete('/order-statuses/{id}', [OrderStatusController::class, 'destroy']);
+
+    // Payment Methods
+    Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
+    Route::post('/payment-methods', [PaymentMethodController::class, 'store']);
+    Route::get('/payment-methods/{id}', [PaymentMethodController::class, 'show']);
+    Route::put('/payment-methods/{id}', [PaymentMethodController::class, 'update']);
+    Route::delete('/payment-methods/{id}', [PaymentMethodController::class, 'destroy']);
+    Route::put('/payment-methods/{id}/toggle', [PaymentMethodController::class, 'toggle']);
+
+    // Shipping
+    Route::get('/shipping/methods', [ShippingController::class, 'methods']);
+    Route::post('/shipping/methods', [ShippingController::class, 'storeMethod']);
+    Route::put('/shipping/methods/{id}', [ShippingController::class, 'updateMethod']);
+    Route::delete('/shipping/methods/{id}', [ShippingController::class, 'deleteMethod']);
+    Route::get('/shipping/zones', [ShippingController::class, 'zones']);
+    Route::post('/shipping/zones', [ShippingController::class, 'storeZone']);
+    Route::put('/shipping/zones/{id}', [ShippingController::class, 'updateZone']);
+    Route::delete('/shipping/zones/{id}', [ShippingController::class, 'deleteZone']);
+    Route::get('/shipping/rates', [ShippingController::class, 'rates']);
+    Route::post('/shipping/rates', [ShippingController::class, 'storeRate']);
+    Route::put('/shipping/rates/{id}', [ShippingController::class, 'updateRate']);
+    Route::delete('/shipping/rates/{id}', [ShippingController::class, 'deleteRate']);
+
+    // Tax Classes
+    Route::get('/tax-classes', [TaxController::class, 'index']);
+    Route::post('/tax-classes', [TaxController::class, 'store']);
+    Route::get('/tax-classes/{id}', [TaxController::class, 'show']);
+    Route::put('/tax-classes/{id}', [TaxController::class, 'update']);
+    Route::delete('/tax-classes/{id}', [TaxController::class, 'destroy']);
+
+    // Locations
+    Route::get('/countries', [LocationController::class, 'countries']);
+    Route::post('/countries', [LocationController::class, 'storeCountry']);
+    Route::put('/countries/{id}', [LocationController::class, 'updateCountry']);
+    Route::delete('/countries/{id}', [LocationController::class, 'deleteCountry']);
+    Route::get('/countries/{countryId}/states', [LocationController::class, 'states']);
+    Route::post('/states', [LocationController::class, 'storeState']);
+    Route::put('/states/{id}', [LocationController::class, 'updateState']);
+    Route::delete('/states/{id}', [LocationController::class, 'deleteState']);
+    Route::get('/states/{stateId}/cities', [LocationController::class, 'cities']);
+    Route::post('/cities', [LocationController::class, 'storeCity']);
+    Route::put('/cities/{id}', [LocationController::class, 'updateCity']);
+    Route::delete('/cities/{id}', [LocationController::class, 'deleteCity']);
+
+    // Couriers
+    Route::get('/couriers', [CourierController::class, 'index']);
+    Route::post('/couriers', [CourierController::class, 'store']);
+    Route::put('/couriers/{id}', [CourierController::class, 'update']);
+    Route::delete('/couriers/{id}', [CourierController::class, 'destroy']);
+
+    // Review Statuses
+    Route::get('/review-statuses', [ReviewStatusController::class, 'index']);
+    Route::post('/review-statuses', [ReviewStatusController::class, 'store']);
+    Route::put('/review-statuses/{id}', [ReviewStatusController::class, 'update']);
+    Route::delete('/review-statuses/{id}', [ReviewStatusController::class, 'destroy']);
+
+    // Warehouses
+    Route::get('/warehouses', [WarehouseController::class, 'index']);
+    Route::post('/warehouses', [WarehouseController::class, 'store']);
+    Route::get('/warehouses/{id}', [WarehouseController::class, 'show']);
+    Route::put('/warehouses/{id}', [WarehouseController::class, 'update']);
+    Route::delete('/warehouses/{id}', [WarehouseController::class, 'destroy']);
+
+    // Inventory Logs
+    Route::get('/inventory-logs', [InventoryLogController::class, 'index']);
+    Route::post('/inventory-logs', [InventoryLogController::class, 'store']);
+
+    // SEO
+    Route::get('/seo-pages', [SeoController::class, 'index']);
+    Route::post('/seo-pages', [SeoController::class, 'store']);
+    Route::put('/seo-pages/{id}', [SeoController::class, 'update']);
+    Route::delete('/seo-pages/{id}', [SeoController::class, 'destroy']);
+    Route::get('/redirects', [SeoController::class, 'redirects']);
+    Route::post('/redirects', [SeoController::class, 'storeRedirect']);
+    Route::put('/redirects/{id}', [SeoController::class, 'updateRedirect']);
+    Route::delete('/redirects/{id}', [SeoController::class, 'deleteRedirect']);
+
+    // Media
+    Route::get('/media', [MediaController::class, 'index']);
+    Route::post('/media', [MediaController::class, 'store']);
+    Route::put('/media/{id}', [MediaController::class, 'update']);
+    Route::delete('/media/{id}', [MediaController::class, 'destroy']);
+    Route::get('/media/folders', [MediaController::class, 'folders']);
+    Route::post('/media/folders', [MediaController::class, 'storeFolder']);
+    Route::put('/media/folders/{id}', [MediaController::class, 'updateFolder']);
+    Route::delete('/media/folders/{id}', [MediaController::class, 'deleteFolder']);
+
+    // Notification Templates
+    Route::get('/notification-templates', [NotificationTemplateController::class, 'index']);
+    Route::post('/notification-templates', [NotificationTemplateController::class, 'store']);
+    Route::get('/notification-templates/{id}', [NotificationTemplateController::class, 'show']);
+    Route::put('/notification-templates/{id}', [NotificationTemplateController::class, 'update']);
+    Route::delete('/notification-templates/{id}', [NotificationTemplateController::class, 'destroy']);
+
+    // Settings
+    Route::get('/settings', [SettingController::class, 'index']);
+    Route::put('/settings', [SettingController::class, 'update']);
+    Route::get('/settings/groups', [SettingController::class, 'groups']);
 
     // Analytics
     Route::get('/analytics/dashboard', [AnalyticsController::class, 'dashboard']);
@@ -195,6 +330,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:' . implode(',', [
 
     // Brands
     Route::get('/brands', [BrandController::class, 'index']);
+    Route::get('/brands/{id}', [BrandController::class, 'show']);
     Route::post('/brands', [BrandController::class, 'store']);
     Route::put('/brands/{id}', [BrandController::class, 'update']);
     Route::delete('/brands/{id}', [BrandController::class, 'destroy']);
@@ -215,10 +351,6 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:' . implode(',', [
     Route::get('/tags', [TagController::class, 'index']);
     Route::post('/tags', [TagController::class, 'store']);
     Route::delete('/tags/{id}', [TagController::class, 'destroy']);
-
-    // Settings
-    Route::get('/settings', [SettingsController::class, 'index']);
-    Route::put('/settings', [SettingsController::class, 'update']);
 
     // Activity Logs
     Route::get('/activity-logs', [ActivityLogController::class, 'index']);

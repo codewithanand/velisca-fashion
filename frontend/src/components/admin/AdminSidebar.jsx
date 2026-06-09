@@ -18,26 +18,95 @@ import {
   Key,
   Star,
   MessageSquare,
+  Grid3X3,
+  CreditCard,
+  Truck,
+  Receipt,
+  Globe,
+  Building2,
+  Warehouse,
+  FileText,
+  Mail,
+  ListOrdered,
+  Hash,
+  Palette,
+  Ruler,
 } from 'lucide-react';
 import { useAdmin } from '../../context/admin/AdminContext';
 import AdminBadge from './AdminBadge';
 
-const allNavItems = [
-  { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true, roles: ['admin', 'staff'] },
-  { path: '/admin/products', icon: Package, label: 'Products', roles: ['admin', 'staff'] },
-  { path: '/admin/categories', icon: Layers, label: 'Categories', roles: ['admin', 'staff'] },
-  { path: '/admin/orders', icon: ShoppingCart, label: 'Orders', roles: ['admin', 'staff'] },
-  { path: '/admin/inventory', icon: PackageOpen, label: 'Inventory', roles: ['admin', 'staff'] },
-  { path: '/admin/reviews', icon: MessageSquare, label: 'Reviews', roles: ['admin', 'staff'] },
-  { path: '/admin/collections', icon: Star, label: 'Collections', roles: ['admin', 'staff'] },
-  { path: '/admin/users', icon: Users, label: 'Users', roles: ['admin', 'staff'] },
-  { path: '/admin/roles', icon: ShieldCheck, label: 'Roles', roles: ['admin'] },
-  { path: '/admin/permissions', icon: Key, label: 'Permissions', roles: ['admin'] },
-  { path: '/admin/coupons', icon: Percent, label: 'Coupons', roles: ['admin'] },
-  { path: '/admin/banners', icon: Image, label: 'Banners', roles: ['admin', 'staff'] },
-  { path: '/admin/analytics', icon: BarChart3, label: 'Analytics', roles: ['admin', 'staff'] },
-  { path: '/admin/notifications', icon: Bell, label: 'Notifications', roles: ['admin'] },
-  { path: '/admin/settings', icon: Settings, label: 'Settings', roles: ['admin'] },
+const navSections = [
+  {
+    label: 'Dashboard',
+    items: [
+      { path: '/admin', icon: LayoutDashboard, label: 'Overview', end: true, roles: ['admin', 'staff'] },
+    ],
+  },
+  {
+    label: 'Catalog',
+    items: [
+      { path: '/admin/products', icon: Package, label: 'Products', roles: ['admin', 'staff'] },
+      { path: '/admin/categories', icon: Layers, label: 'Categories', roles: ['admin', 'staff'] },
+      { path: '/admin/collections', icon: Star, label: 'Collections', roles: ['admin', 'staff'] },
+      { path: '/admin/attributes', icon: Grid3X3, label: 'Attributes', roles: ['admin', 'staff'] },
+      { path: '/admin/media', icon: Image, label: 'Media Library', roles: ['admin', 'staff'] },
+      { path: '/admin/seo', icon: FileText, label: 'SEO', roles: ['admin', 'staff'] },
+      { path: '/admin/reviews', icon: MessageSquare, label: 'Reviews', roles: ['admin', 'staff'] },
+    ],
+  },
+  {
+    label: 'Masters',
+    items: [
+      { path: '/admin/brands', icon: Globe, label: 'Brands', roles: ['admin', 'staff'] },
+      { path: '/admin/colors', icon: Palette, label: 'Colors', roles: ['admin', 'staff'] },
+      { path: '/admin/sizes', icon: Ruler, label: 'Sizes', roles: ['admin', 'staff'] },
+    ],
+  },
+  {
+    label: 'Sales',
+    items: [
+      { path: '/admin/orders', icon: ShoppingCart, label: 'Orders', roles: ['admin', 'staff'] },
+      { path: '/admin/coupons', icon: Percent, label: 'Coupons', roles: ['admin'] },
+      { path: '/admin/shipping', icon: Truck, label: 'Shipping', roles: ['admin', 'staff'] },
+      { path: '/admin/couriers', icon: Building2, label: 'Couriers', roles: ['admin', 'staff'] },
+      { path: '/admin/locations', icon: Globe, label: 'Locations', roles: ['admin', 'staff'] },
+      { path: '/admin/taxes', icon: Receipt, label: 'Taxes', roles: ['admin', 'staff'] },
+      { path: '/admin/payment-methods', icon: CreditCard, label: 'Payment Methods', roles: ['admin', 'staff'] },
+      { path: '/admin/order-statuses', icon: ListOrdered, label: 'Order Statuses', roles: ['admin', 'staff'] },
+    ],
+  },
+  {
+    label: 'Marketing',
+    items: [
+      { path: '/admin/banners', icon: Image, label: 'Banners', roles: ['admin', 'staff'] },
+      { path: '/admin/notification-templates', icon: Mail, label: 'Notification Templates', roles: ['admin'] },
+    ],
+  },
+  {
+    label: 'Customers',
+    items: [
+      { path: '/admin/users', icon: Users, label: 'Users', roles: ['admin', 'staff'] },
+      { path: '/admin/review-statuses', icon: Hash, label: 'Review Statuses', roles: ['admin', 'staff'] },
+    ],
+  },
+  {
+    label: 'Inventory',
+    items: [
+      { path: '/admin/warehouses', icon: Warehouse, label: 'Warehouses', roles: ['admin', 'staff'] },
+      { path: '/admin/inventory', icon: PackageOpen, label: 'Stock', roles: ['admin', 'staff'] },
+      { path: '/admin/inventory-logs', icon: FileText, label: 'Inventory Logs', roles: ['admin', 'staff'] },
+    ],
+  },
+  {
+    label: 'System',
+    items: [
+      { path: '/admin/analytics', icon: BarChart3, label: 'Analytics', roles: ['admin', 'staff'] },
+      { path: '/admin/notifications', icon: Bell, label: 'Notifications', roles: ['admin'] },
+      { path: '/admin/roles', icon: ShieldCheck, label: 'Roles', roles: ['admin'] },
+      { path: '/admin/permissions', icon: Key, label: 'Permissions', roles: ['admin'] },
+      { path: '/admin/settings', icon: Settings, label: 'Settings', roles: ['admin'] },
+    ],
+  },
 ];
 
 const roleBadge = {
@@ -47,10 +116,6 @@ const roleBadge = {
 
 export default function AdminSidebar() {
   const { sidebarOpen, setSidebarOpen, admin, hasAnyRole } = useAdmin();
-
-  const navItems = allNavItems.filter((item) =>
-    item.roles.some((role) => hasAnyRole([role]))
-  );
 
   const sidebarContent = (
     <div className="flex flex-col h-full">
@@ -80,21 +145,36 @@ export default function AdminSidebar() {
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto p-3 space-y-0.5 admin-scrollbar">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.end}
-            onClick={() => setSidebarOpen(false)}
-            className={({ isActive }) =>
-              `sidebar-item ${isActive ? 'active' : ''}`
-            }
-          >
-            <item.icon size={18} />
-            <span>{item.label}</span>
-          </NavLink>
-        ))}
+      <nav className="flex-1 overflow-y-auto p-3 space-y-3 admin-scrollbar">
+        {navSections.map((section) => {
+          const visibleItems = section.items.filter((item) =>
+            item.roles.some((role) => hasAnyRole([role]))
+          );
+          if (visibleItems.length === 0) return null;
+          return (
+            <div key={section.label}>
+              <p className="px-2 text-[10px] font-semibold uppercase tracking-wider text-text-secondary/60 mb-1">
+                {section.label}
+              </p>
+              <div className="space-y-0.5">
+                {visibleItems.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    end={item.end}
+                    onClick={() => setSidebarOpen(false)}
+                    className={({ isActive }) =>
+                      `sidebar-item ${isActive ? 'active' : ''}`
+                    }
+                  >
+                    <item.icon size={18} />
+                    <span>{item.label}</span>
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </nav>
 
       <div className="p-4 border-t border-border/50">

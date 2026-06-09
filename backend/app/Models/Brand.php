@@ -12,10 +12,24 @@ class Brand extends Model
         'slug',
         'description',
         'logo',
+        'banner',
         'website',
+        'featured',
+        'sort_order',
         'status',
+        'seo_title',
+        'seo_description',
+        'seo_keywords',
         'created_by',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'featured' => 'boolean',
+            'status' => 'boolean',
+        ];
+    }
 
     public function products(): HasMany
     {

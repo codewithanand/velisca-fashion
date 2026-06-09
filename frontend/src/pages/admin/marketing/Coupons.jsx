@@ -194,8 +194,8 @@ export default function AdminCoupons() {
                   <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
                     <span className="text-sm font-bold text-primary">{coupon.code}</span>
                   </div>
-                  <AdminBadge variant={coupon.status === 'active' ? 'success' : 'danger'}>
-                    {coupon.status.charAt(0).toUpperCase() + coupon.status.slice(1)}
+                  <AdminBadge variant={coupon.status ? 'success' : 'danger'}>
+                    {coupon.status ? 'Active' : 'Inactive'}
                   </AdminBadge>
                 </div>
                 <div className="space-y-1">

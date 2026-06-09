@@ -8,8 +8,21 @@ class Size extends Model
 {
     protected $fillable = [
         'name',
-        'category',
+        'code',
+        'international_size',
+        'size_group',
+        'chest',
+        'waist',
+        'hips',
+        'length',
         'sort_order',
         'status',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => 'boolean',
+        ];
+    }
 }

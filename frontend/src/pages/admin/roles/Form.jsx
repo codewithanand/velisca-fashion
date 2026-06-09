@@ -7,6 +7,7 @@ import AdminButton from '../../../components/admin/AdminButton';
 import AdminInput from '../../../components/admin/AdminInput';
 import AdminLoader from '../../../components/admin/AdminLoader';
 import useRolesStore from '../../../stores/roles.store';
+import useFormValidation from '../../../hooks/useFormValidation';
 import usePermissionsStore from '../../../stores/permissions.store';
 
 const permissionGroupLabels = {
@@ -32,7 +33,6 @@ export default function CreateRolePage() {
   const { permissions, fetchPermissions } = usePermissionsStore();
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
-  const [errors, setErrors] = useState({});
   const [search, setSearch] = useState('');
   const [expandedGroups, setExpandedGroups] = useState(new Set());
   const [form, setForm] = useState({
@@ -41,8 +41,14 @@ export default function CreateRolePage() {
     permissions: [],
   });
 
+  const rules = {
+    name: [{ required: true }, { minLength: 2 }],
+  };
+  const { errors, validate, clearErrors, clearField, setErrors } = useFormValidation(rules);
+
   useEffect(() => {
     fetchPermissions();
+    clearErrors();
     if (isEdit) {
       const load = async () => {
         try {
@@ -110,10 +116,7 @@ export default function CreateRolePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim()) {
-      setErrors({ name: 'Role name is required' });
-      return;
-    }
+    if (!validate(form)) return;
     setSaving(true);
     try {
       const payload = {
@@ -244,7 +247,7 @@ export default function CreateRolePage() {
                   label="Role Name"
                   placeholder="e.g. Editor"
                   value={form.name}
-                  onChange={(e) => { setForm((p) => ({ ...p, name: e.target.value })); setErrors((p) => ({ ...p, name: '' })); }}
+                  onChange={(e) => { setForm((p) => ({ ...p, name: e.target.value })); clearField('name'); }}
                   error={errors.name}
                 />
                 <div className="flex flex-col gap-1.5">
