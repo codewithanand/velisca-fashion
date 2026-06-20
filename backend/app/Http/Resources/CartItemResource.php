@@ -22,7 +22,7 @@ class CartItemResource extends JsonResource
             'quantity' => $this->quantity,
             'subtotal' => (float) $this->subtotal,
             'save_for_later' => $this->save_for_later,
-            'thumbnail' => $this->whenLoaded('product.primaryImage', fn() => [
+            'thumbnail' => $this->whenLoaded('product.primaryImage', fn () => [
                 'id' => $this->product->primaryImage->id,
                 'image' => $this->product->primaryImage->image,
             ]),

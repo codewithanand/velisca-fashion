@@ -42,7 +42,7 @@ class TokenService
 
     public function isValidRefreshToken(?string $token): bool
     {
-        return !is_null($token) && strlen($token) === 128;
+        return ! is_null($token) && strlen($token) === 128;
     }
 
     public function revokeCurrentToken(PersonalAccessToken $token): void

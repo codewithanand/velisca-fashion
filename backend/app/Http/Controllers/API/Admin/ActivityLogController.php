@@ -16,7 +16,7 @@ class ActivityLogController extends Controller
         $logs = ActivityLog::with('user')
             ->when($request->search, function ($q, $search) {
                 $q->where('description', 'like', "%{$search}%")
-                  ->orWhere('action', 'like', "%{$search}%");
+                    ->orWhere('action', 'like', "%{$search}%");
             })
             ->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 20));
@@ -35,6 +35,7 @@ class ActivityLogController extends Controller
     public function clear()
     {
         ActivityLog::truncate();
+
         return $this->success('Activity logs cleared');
     }
 }

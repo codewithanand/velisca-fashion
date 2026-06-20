@@ -8,6 +8,7 @@ use App\Models\Shipment;
 use App\Services\OrderService;
 use App\Services\PaymentService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -49,10 +50,10 @@ class AdminOrderController extends Controller
 
         return $this->success('Orders retrieved', [
             'orders' => $orders->items(),
-            'meta'   => [
-                'total'     => $orders->total(),
-                'page'      => $orders->currentPage(),
-                'per_page'  => $orders->perPage(),
+            'meta' => [
+                'total' => $orders->total(),
+                'page' => $orders->currentPage(),
+                'per_page' => $orders->perPage(),
                 'last_page' => $orders->lastPage(),
             ],
         ]);
@@ -62,7 +63,7 @@ class AdminOrderController extends Controller
     {
         try {
             $order = Order::with(['items', 'payment', 'shipment', 'statusHistories', 'user'])->findOrFail((int) $id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Order not found');
         }
 
@@ -74,7 +75,7 @@ class AdminOrderController extends Controller
     public function updateStatus(Request $request, string $id): JsonResponse
     {
         $validated = $request->validate([
-            'status' => 'required|string|in:' . implode(',', [
+            'status' => 'required|string|in:'.implode(',', [
                 Order::STATUS_PENDING,
                 Order::STATUS_CONFIRMED,
                 Order::STATUS_PROCESSING,
@@ -89,7 +90,7 @@ class AdminOrderController extends Controller
         try {
             $order = Order::findOrFail((int) $id);
             $order = $this->orderService->updateStatus($order, $validated['status'], $validated['notes'] ?? null);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Order not found');
         } catch (\RuntimeException $e) {
             return $this->error($e->getMessage());
@@ -104,12 +105,12 @@ class AdminOrderController extends Controller
     {
         $validated = $request->validate([
             'tracking_number' => 'required|string|max:255',
-            'courier_name'    => 'required|string|max:255',
+            'courier_name' => 'required|string|max:255',
         ]);
 
         try {
             $order = Order::findOrFail((int) $id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Order not found');
         }
 
@@ -117,9 +118,9 @@ class AdminOrderController extends Controller
             ['order_id' => $order->id],
             [
                 'tracking_number' => $validated['tracking_number'],
-                'courier_name'    => $validated['courier_name'],
+                'courier_name' => $validated['courier_name'],
                 'shipment_status' => Shipment::STATUS_SHIPPED,
-                'shipped_at'      => now(),
+                'shipped_at' => now(),
             ]
         );
 
@@ -141,7 +142,7 @@ class AdminOrderController extends Controller
         try {
             $order = Order::findOrFail((int) $id);
             $order = $this->orderService->cancelOrder($order, $validated['reason'] ?? 'Cancelled by admin.');
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Order not found');
         } catch (\RuntimeException $e) {
             return $this->error($e->getMessage());
@@ -157,7 +158,7 @@ class AdminOrderController extends Controller
         try {
             $order = Order::findOrFail((int) $id);
             $order = $this->paymentService->processRefund($order);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Order not found');
         } catch (\RuntimeException $e) {
             return $this->error($e->getMessage());
@@ -180,10 +181,10 @@ class AdminOrderController extends Controller
 
         return $this->success('Order analytics retrieved', [
             'analytics' => [
-                'total_orders'      => $totalOrders,
-                'revenue'           => (float) $revenue,
-                'avg_order_value'   => $avgOrderValue,
-                'status_breakdown'  => $statusBreakdown,
+                'total_orders' => $totalOrders,
+                'revenue' => (float) $revenue,
+                'avg_order_value' => $avgOrderValue,
+                'status_breakdown' => $statusBreakdown,
             ],
         ]);
     }

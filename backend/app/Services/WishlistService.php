@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Cart;
-use App\Models\Product;
 use App\Models\WishlistItem;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -29,7 +27,7 @@ class WishlistService
         }
 
         return WishlistItem::create([
-            'user_id'    => $userId,
+            'user_id' => $userId,
             'product_id' => $productId,
             'variant_id' => $variantId,
         ]);

@@ -23,7 +23,7 @@ class CouponService
     {
         $coupon = $this->getCouponByCode($code);
 
-        if (!$coupon) {
+        if (! $coupon) {
             throw new \RuntimeException('Invalid or expired coupon code.');
         }
 
@@ -37,8 +37,8 @@ class CouponService
 
         return [
             'coupon' => $coupon,
-            'type'   => $coupon->type,
-            'value'  => (float) $coupon->value,
+            'type' => $coupon->type,
+            'value' => (float) $coupon->value,
         ];
     }
 
@@ -61,9 +61,9 @@ class CouponService
         };
 
         return [
-            'coupon'   => $coupon,
+            'coupon' => $coupon,
             'discount' => round($discount, 2),
-            'type'     => $coupon->type,
+            'type' => $coupon->type,
         ];
     }
 

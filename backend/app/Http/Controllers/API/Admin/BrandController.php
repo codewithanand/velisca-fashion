@@ -15,7 +15,7 @@ class BrandController extends Controller
     public function index(Request $request)
     {
         $brands = Brand::withCount('products')
-            ->when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
             ->orderBy('name')
             ->get();
 
@@ -25,7 +25,9 @@ class BrandController extends Controller
     public function show($id)
     {
         $brand = Brand::withCount('products')->find($id);
-        if (!$brand) return $this->notFound('Brand not found');
+        if (! $brand) {
+            return $this->notFound('Brand not found');
+        }
 
         return $this->success('Brand retrieved', ['brand' => $brand]);
     }
@@ -57,11 +59,13 @@ class BrandController extends Controller
     public function update(Request $request, $id)
     {
         $brand = Brand::find($id);
-        if (!$brand) return $this->notFound('Brand not found');
+        if (! $brand) {
+            return $this->notFound('Brand not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:brands,slug,' . $id,
+            'slug' => 'sometimes|string|max:255|unique:brands,slug,'.$id,
             'description' => 'nullable|string',
             'logo' => 'nullable|string',
             'banner' => 'nullable|string',
@@ -74,7 +78,7 @@ class BrandController extends Controller
             'seo_keywords' => 'nullable|string',
         ]);
 
-        if (isset($validated['name']) && !isset($validated['slug'])) {
+        if (isset($validated['name']) && ! isset($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['name']);
         }
 
@@ -86,8 +90,11 @@ class BrandController extends Controller
     public function destroy($id)
     {
         $brand = Brand::find($id);
-        if (!$brand) return $this->notFound('Brand not found');
+        if (! $brand) {
+            return $this->notFound('Brand not found');
+        }
         $brand->delete();
+
         return $this->success('Brand deleted');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
@@ -29,6 +30,7 @@ class PermissionController extends Controller
 
         $groups = $permissions->groupBy(function ($permission) {
             $parts = explode(' ', $permission->name);
+
             return count($parts) > 1 ? ucfirst($parts[1]) : 'General';
         });
 
@@ -54,7 +56,7 @@ class PermissionController extends Controller
     {
         $permission = Permission::find($id);
 
-        if (!$permission) {
+        if (! $permission) {
             return $this->notFound('Permission not found');
         }
 
@@ -67,7 +69,7 @@ class PermissionController extends Controller
     {
         $role = Role::find($roleId);
 
-        if (!$role) {
+        if (! $role) {
             return $this->notFound('Role not found');
         }
 
@@ -85,9 +87,9 @@ class PermissionController extends Controller
 
     public function assignToUser(Request $request, $userId)
     {
-        $user = \App\Models\User::find($userId);
+        $user = User::find($userId);
 
-        if (!$user) {
+        if (! $user) {
             return $this->notFound('User not found');
         }
 

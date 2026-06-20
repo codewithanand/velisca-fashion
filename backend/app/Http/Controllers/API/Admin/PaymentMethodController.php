@@ -13,9 +13,9 @@ class PaymentMethodController extends Controller
 
     public function index(Request $request)
     {
-        $methods = PaymentMethod::when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->when($request->gateway, fn($q, $g) => $q->where('gateway', $g))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+        $methods = PaymentMethod::when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->gateway, fn ($q, $g) => $q->where('gateway', $g))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('sort_order')
             ->get();
 
@@ -43,7 +43,9 @@ class PaymentMethodController extends Controller
     public function show($id)
     {
         $method = PaymentMethod::find($id);
-        if (!$method) return $this->notFound('Payment method not found');
+        if (! $method) {
+            return $this->notFound('Payment method not found');
+        }
 
         return $this->success('Payment method retrieved', ['payment_method' => $method]);
     }
@@ -51,11 +53,13 @@ class PaymentMethodController extends Controller
     public function update(Request $request, $id)
     {
         $method = PaymentMethod::find($id);
-        if (!$method) return $this->notFound('Payment method not found');
+        if (! $method) {
+            return $this->notFound('Payment method not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'code' => 'sometimes|string|max:50|unique:payment_methods,code,' . $id,
+            'code' => 'sometimes|string|max:50|unique:payment_methods,code,'.$id,
             'icon' => 'nullable|string',
             'gateway' => 'nullable|string|max:100',
             'supports_refund' => 'nullable|boolean',
@@ -72,18 +76,23 @@ class PaymentMethodController extends Controller
     public function destroy($id)
     {
         $method = PaymentMethod::find($id);
-        if (!$method) return $this->notFound('Payment method not found');
+        if (! $method) {
+            return $this->notFound('Payment method not found');
+        }
 
         $method->delete();
+
         return $this->success('Payment method deleted');
     }
 
     public function toggle($id)
     {
         $method = PaymentMethod::find($id);
-        if (!$method) return $this->notFound('Payment method not found');
+        if (! $method) {
+            return $this->notFound('Payment method not found');
+        }
 
-        $method->update(['status' => !$method->status]);
+        $method->update(['status' => ! $method->status]);
 
         return $this->success('Payment method status toggled', ['method' => $method]);
     }

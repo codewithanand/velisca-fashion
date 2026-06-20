@@ -29,7 +29,7 @@ class PasswordResetNotification extends Notification
         return (new MailMessage)
             ->subject('Reset Your Password')
             ->line('You are receiving this email because we received a password reset request for your account.')
-            ->action('Reset Password', $frontendUrl . '/reset-password?token=' . $this->token . '&email=' . $notifiable->getEmailForPasswordReset())
+            ->action('Reset Password', $frontendUrl.'/reset-password?token='.$this->token.'&email='.$notifiable->getEmailForPasswordReset())
             ->line('This password reset link will expire in 60 minutes.')
             ->line('If you did not request a password reset, no further action is required.');
     }

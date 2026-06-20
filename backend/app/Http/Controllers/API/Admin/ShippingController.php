@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ShippingMethod;
-use App\Models\ShippingZone;
 use App\Models\ShippingRate;
+use App\Models\ShippingZone;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 
@@ -18,8 +18,8 @@ class ShippingController extends Controller
     public function methods(Request $request)
     {
         $methods = ShippingMethod::withCount('rates')
-            ->when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+            ->when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('name')
             ->get();
 
@@ -45,11 +45,13 @@ class ShippingController extends Controller
     public function updateMethod(Request $request, $id)
     {
         $method = ShippingMethod::find($id);
-        if (!$method) return $this->notFound('Shipping method not found');
+        if (! $method) {
+            return $this->notFound('Shipping method not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'code' => 'sometimes|string|max:50|unique:shipping_methods,code,' . $id,
+            'code' => 'sometimes|string|max:50|unique:shipping_methods,code,'.$id,
             'type' => 'nullable|string|max:50',
             'delivery_time' => 'nullable|string|max:100',
             'base_cost' => 'nullable|numeric|min:0',
@@ -64,10 +66,13 @@ class ShippingController extends Controller
     public function deleteMethod($id)
     {
         $method = ShippingMethod::find($id);
-        if (!$method) return $this->notFound('Shipping method not found');
+        if (! $method) {
+            return $this->notFound('Shipping method not found');
+        }
 
         $method->rates()->delete();
         $method->delete();
+
         return $this->success('Shipping method deleted');
     }
 
@@ -75,8 +80,8 @@ class ShippingController extends Controller
 
     public function zones(Request $request)
     {
-        $zones = ShippingZone::when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+        $zones = ShippingZone::when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('name')
             ->get();
 
@@ -102,7 +107,9 @@ class ShippingController extends Controller
     public function updateZone(Request $request, $id)
     {
         $zone = ShippingZone::find($id);
-        if (!$zone) return $this->notFound('Shipping zone not found');
+        if (! $zone) {
+            return $this->notFound('Shipping zone not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -121,9 +128,12 @@ class ShippingController extends Controller
     public function deleteZone($id)
     {
         $zone = ShippingZone::find($id);
-        if (!$zone) return $this->notFound('Shipping zone not found');
+        if (! $zone) {
+            return $this->notFound('Shipping zone not found');
+        }
 
         $zone->delete();
+
         return $this->success('Shipping zone deleted');
     }
 
@@ -164,7 +174,9 @@ class ShippingController extends Controller
     public function updateRate(Request $request, $id)
     {
         $rate = ShippingRate::find($id);
-        if (!$rate) return $this->notFound('Shipping rate not found');
+        if (! $rate) {
+            return $this->notFound('Shipping rate not found');
+        }
 
         $validated = $request->validate([
             'shipping_method_id' => 'sometimes|exists:shipping_methods,id',
@@ -182,9 +194,12 @@ class ShippingController extends Controller
     public function deleteRate($id)
     {
         $rate = ShippingRate::find($id);
-        if (!$rate) return $this->notFound('Shipping rate not found');
+        if (! $rate) {
+            return $this->notFound('Shipping rate not found');
+        }
 
         $rate->delete();
+
         return $this->success('Shipping rate deleted');
     }
 }

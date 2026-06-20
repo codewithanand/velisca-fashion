@@ -29,9 +29,9 @@ class PaymentController extends Controller
     public function verify(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'order_id'         => 'required|exists:orders,id',
-            'payment_id'       => 'required|string',
-            'signature'        => 'nullable|string',
+            'order_id' => 'required|exists:orders,id',
+            'payment_id' => 'required|string',
+            'signature' => 'nullable|string',
             'razorpay_order_id' => 'nullable|string',
             'razorpay_payment_id' => 'nullable|string',
             'razorpay_signature' => 'nullable|string',

@@ -103,7 +103,7 @@ class AuthController extends Controller
     {
         $result = $this->authService->login($request->validated());
 
-        if (!$result) {
+        if (! $result) {
             return $this->error('Invalid email or password', null, 401);
         }
 
@@ -146,6 +146,7 @@ class AuthController extends Controller
     {
         $user = auth()->user();
         $user->load('roles', 'permissions');
+
         return $this->success('Current user retrieved', [
             'user' => new UserResource($user),
         ]);

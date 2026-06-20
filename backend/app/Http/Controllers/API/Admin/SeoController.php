@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\SeoPage;
 use App\Models\Redirect;
+use App\Models\SeoPage;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 
@@ -16,10 +16,10 @@ class SeoController extends Controller
 
     public function index(Request $request)
     {
-        $pages = SeoPage::when($request->page_type, fn($q, $t) => $q->where('page_type', $t))
-            ->when($request->search, fn($q, $s) => $q->where(function ($q) use ($s) {
+        $pages = SeoPage::when($request->page_type, fn ($q, $t) => $q->where('page_type', $t))
+            ->when($request->search, fn ($q, $s) => $q->where(function ($q) use ($s) {
                 $q->where('meta_title', 'like', "%{$s}%")
-                  ->orWhere('meta_description', 'like', "%{$s}%");
+                    ->orWhere('meta_description', 'like', "%{$s}%");
             }))
             ->orderBy('page_type')
             ->get();
@@ -47,7 +47,9 @@ class SeoController extends Controller
     public function update(Request $request, $id)
     {
         $page = SeoPage::find($id);
-        if (!$page) return $this->notFound('SEO page not found');
+        if (! $page) {
+            return $this->notFound('SEO page not found');
+        }
 
         $validated = $request->validate([
             'page_type' => 'sometimes|string|max:100',
@@ -67,9 +69,12 @@ class SeoController extends Controller
     public function destroy($id)
     {
         $page = SeoPage::find($id);
-        if (!$page) return $this->notFound('SEO page not found');
+        if (! $page) {
+            return $this->notFound('SEO page not found');
+        }
 
         $page->delete();
+
         return $this->success('SEO page deleted');
     }
 
@@ -77,10 +82,10 @@ class SeoController extends Controller
 
     public function redirects(Request $request)
     {
-        $redirects = Redirect::when($request->search, fn($q, $s) => $q->where(function ($q) use ($s) {
-                $q->where('source_url', 'like', "%{$s}%")
-                  ->orWhere('destination_url', 'like', "%{$s}%");
-            }))
+        $redirects = Redirect::when($request->search, fn ($q, $s) => $q->where(function ($q) use ($s) {
+            $q->where('source_url', 'like', "%{$s}%")
+                ->orWhere('destination_url', 'like', "%{$s}%");
+        }))
             ->orderBy('source_url')
             ->get();
 
@@ -103,10 +108,12 @@ class SeoController extends Controller
     public function updateRedirect(Request $request, $id)
     {
         $redirect = Redirect::find($id);
-        if (!$redirect) return $this->notFound('Redirect not found');
+        if (! $redirect) {
+            return $this->notFound('Redirect not found');
+        }
 
         $validated = $request->validate([
-            'source_url' => 'sometimes|string|unique:redirects,source_url,' . $id,
+            'source_url' => 'sometimes|string|unique:redirects,source_url,'.$id,
             'destination_url' => 'sometimes|string',
             'redirect_type' => 'nullable|integer|in:301,302',
         ]);
@@ -119,9 +126,12 @@ class SeoController extends Controller
     public function deleteRedirect($id)
     {
         $redirect = Redirect::find($id);
-        if (!$redirect) return $this->notFound('Redirect not found');
+        if (! $redirect) {
+            return $this->notFound('Redirect not found');
+        }
 
         $redirect->delete();
+
         return $this->success('Redirect deleted');
     }
 }

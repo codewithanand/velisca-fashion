@@ -2,12 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\Coupon;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,7 +17,7 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // ========== Create Permissions ==========
         $permissionGroups = [
@@ -194,7 +196,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($coupons as $coupon) {
-            \App\Models\Coupon::firstOrCreate(
+            Coupon::firstOrCreate(
                 ['code' => $coupon['code']],
                 $coupon
             );

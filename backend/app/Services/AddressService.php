@@ -26,8 +26,8 @@ class AddressService
     {
         $data['user_id'] = $userId;
 
-        if (!isset($data['is_default'])) {
-            $data['is_default'] = !Address::where('user_id', $userId)->exists();
+        if (! isset($data['is_default'])) {
+            $data['is_default'] = ! Address::where('user_id', $userId)->exists();
         }
 
         return Address::create($data);

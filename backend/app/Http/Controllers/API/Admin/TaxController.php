@@ -13,9 +13,9 @@ class TaxController extends Controller
 
     public function index(Request $request)
     {
-        $classes = TaxClass::when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->when($request->country, fn($q, $c) => $q->where('country', $c))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+        $classes = TaxClass::when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->country, fn ($q, $c) => $q->where('country', $c))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('name')
             ->get();
 
@@ -40,7 +40,9 @@ class TaxController extends Controller
     public function show($id)
     {
         $class = TaxClass::find($id);
-        if (!$class) return $this->notFound('Tax class not found');
+        if (! $class) {
+            return $this->notFound('Tax class not found');
+        }
 
         return $this->success('Tax class retrieved', ['tax_class' => $class]);
     }
@@ -48,7 +50,9 @@ class TaxController extends Controller
     public function update(Request $request, $id)
     {
         $class = TaxClass::find($id);
-        if (!$class) return $this->notFound('Tax class not found');
+        if (! $class) {
+            return $this->notFound('Tax class not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -66,9 +70,12 @@ class TaxController extends Controller
     public function destroy($id)
     {
         $class = TaxClass::find($id);
-        if (!$class) return $this->notFound('Tax class not found');
+        if (! $class) {
+            return $this->notFound('Tax class not found');
+        }
 
         $class->delete();
+
         return $this->success('Tax class deleted');
     }
 }

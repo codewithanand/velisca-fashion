@@ -16,7 +16,7 @@ class ReviewResource extends JsonResource
             'rating' => $this->rating,
             'review' => $this->review,
             'status' => $this->status,
-            'user' => $this->whenLoaded('user', fn() => [
+            'user' => $this->whenLoaded('user', fn () => [
                 'id' => $this->user->id,
                 'name' => $this->user->name,
                 'avatar' => $this->user->avatar,

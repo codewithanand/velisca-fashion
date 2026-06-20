@@ -31,6 +31,12 @@ import {
   Hash,
   Palette,
   Ruler,
+  Newspaper,
+  Megaphone,
+  Square,
+  Layout,
+  BookOpen,
+  PenSquare,
 } from 'lucide-react';
 import { useAdmin } from '../../context/admin/AdminContext';
 import AdminBadge from './AdminBadge';
@@ -43,15 +49,23 @@ const navSections = [
     ],
   },
   {
+    label: 'Content',
+    items: [
+      { path: '/admin/cms-pages', icon: FileText, label: 'CMS Pages', roles: ['admin', 'staff'] },
+      { path: '/admin/homepage', icon: Layout, label: 'Homepage Builder', roles: ['admin', 'staff'] },
+      { path: '/admin/blogs', icon: BookOpen, label: 'Blog Posts', roles: ['admin', 'staff'] },
+      { path: '/admin/media', icon: Image, label: 'Media Library', roles: ['admin', 'staff'] },
+      { path: '/admin/seo', icon: Globe, label: 'SEO', roles: ['admin', 'staff'] },
+      { path: '/admin/reviews', icon: MessageSquare, label: 'Reviews', roles: ['admin', 'staff'] },
+    ],
+  },
+  {
     label: 'Catalog',
     items: [
       { path: '/admin/products', icon: Package, label: 'Products', roles: ['admin', 'staff'] },
       { path: '/admin/categories', icon: Layers, label: 'Categories', roles: ['admin', 'staff'] },
       { path: '/admin/collections', icon: Star, label: 'Collections', roles: ['admin', 'staff'] },
       { path: '/admin/attributes', icon: Grid3X3, label: 'Attributes', roles: ['admin', 'staff'] },
-      { path: '/admin/media', icon: Image, label: 'Media Library', roles: ['admin', 'staff'] },
-      { path: '/admin/seo', icon: FileText, label: 'SEO', roles: ['admin', 'staff'] },
-      { path: '/admin/reviews', icon: MessageSquare, label: 'Reviews', roles: ['admin', 'staff'] },
     ],
   },
   {
@@ -79,7 +93,12 @@ const navSections = [
     label: 'Marketing',
     items: [
       { path: '/admin/banners', icon: Image, label: 'Banners', roles: ['admin', 'staff'] },
-      { path: '/admin/notification-templates', icon: Mail, label: 'Notification Templates', roles: ['admin'] },
+      { path: '/admin/campaigns', icon: Megaphone, label: 'Campaigns', roles: ['admin', 'staff'] },
+      { path: '/admin/announcements', icon: Newspaper, label: 'Announcements', roles: ['admin', 'staff'] },
+      { path: '/admin/popups', icon: Square, label: 'Popups', roles: ['admin', 'staff'] },
+      { path: '/admin/newsletters', icon: Mail, label: 'Newsletter', roles: ['admin', 'staff'] },
+      { path: '/admin/coupons', icon: Percent, label: 'Coupons', roles: ['admin'] },
+      { path: '/admin/notification-templates', icon: PenSquare, label: 'Notification Templates', roles: ['admin'] },
     ],
   },
   {

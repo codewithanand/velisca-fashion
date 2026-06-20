@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Coupon;
 use App\Services\CouponService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -24,10 +25,10 @@ class AdminCouponController extends Controller
 
         return $this->success('Coupons retrieved', [
             'coupons' => $coupons->items(),
-            'meta'    => [
-                'total'     => $coupons->total(),
-                'page'      => $coupons->currentPage(),
-                'per_page'  => $coupons->perPage(),
+            'meta' => [
+                'total' => $coupons->total(),
+                'page' => $coupons->currentPage(),
+                'per_page' => $coupons->perPage(),
                 'last_page' => $coupons->lastPage(),
             ],
         ]);
@@ -36,15 +37,15 @@ class AdminCouponController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'code'              => 'required|string|max:50|unique:coupons,code',
-            'type'              => 'required|string|in:flat,percentage,free_shipping',
-            'value'             => 'required|numeric|min:0',
-            'minimum_amount'    => 'nullable|numeric|min:0',
-            'maximum_discount'  => 'nullable|numeric|min:0',
-            'usage_limit'       => 'nullable|integer|min:0',
-            'starts_at'         => 'nullable|date',
-            'expires_at'        => 'nullable|date|after:starts_at',
-            'status'            => 'sometimes|boolean',
+            'code' => 'required|string|max:50|unique:coupons,code',
+            'type' => 'required|string|in:flat,percentage,free_shipping',
+            'value' => 'required|numeric|min:0',
+            'minimum_amount' => 'nullable|numeric|min:0',
+            'maximum_discount' => 'nullable|numeric|min:0',
+            'usage_limit' => 'nullable|integer|min:0',
+            'starts_at' => 'nullable|date',
+            'expires_at' => 'nullable|date|after:starts_at',
+            'status' => 'sometimes|boolean',
         ]);
 
         $coupon = Coupon::create($validated);
@@ -58,20 +59,20 @@ class AdminCouponController extends Controller
     {
         try {
             $coupon = Coupon::findOrFail((int) $id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Coupon not found');
         }
 
         $validated = $request->validate([
-            'code'              => 'sometimes|string|max:50|unique:coupons,code,' . $id,
-            'type'              => 'sometimes|string|in:flat,percentage,free_shipping',
-            'value'             => 'sometimes|numeric|min:0',
-            'minimum_amount'    => 'nullable|numeric|min:0',
-            'maximum_discount'  => 'nullable|numeric|min:0',
-            'usage_limit'       => 'nullable|integer|min:0',
-            'starts_at'         => 'nullable|date',
-            'expires_at'        => 'nullable|date|after:starts_at',
-            'status'            => 'sometimes|boolean',
+            'code' => 'sometimes|string|max:50|unique:coupons,code,'.$id,
+            'type' => 'sometimes|string|in:flat,percentage,free_shipping',
+            'value' => 'sometimes|numeric|min:0',
+            'minimum_amount' => 'nullable|numeric|min:0',
+            'maximum_discount' => 'nullable|numeric|min:0',
+            'usage_limit' => 'nullable|integer|min:0',
+            'starts_at' => 'nullable|date',
+            'expires_at' => 'nullable|date|after:starts_at',
+            'status' => 'sometimes|boolean',
         ]);
 
         $coupon->update($validated);
@@ -85,7 +86,7 @@ class AdminCouponController extends Controller
     {
         try {
             $coupon = Coupon::findOrFail((int) $id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Coupon not found');
         }
 
@@ -98,11 +99,11 @@ class AdminCouponController extends Controller
     {
         try {
             $coupon = Coupon::findOrFail((int) $id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Coupon not found');
         }
 
-        $coupon->update(['status' => !$coupon->status]);
+        $coupon->update(['status' => ! $coupon->status]);
 
         return $this->success('Coupon status toggled', [
             'coupon' => $coupon->fresh(),

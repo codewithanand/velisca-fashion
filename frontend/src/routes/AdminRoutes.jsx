@@ -30,6 +30,22 @@ const AdminAnalytics = lazy(() => import('../pages/admin/analytics/Index'));
 const AdminNotifications = lazy(() => import('../pages/admin/notifications/List'));
 const AdminSettings = lazy(() => import('../pages/admin/settings/Index'));
 
+// CMS Routes
+const AdminCmsPages = lazy(() => import('../pages/admin/cms/List'));
+const AdminCmsPageForm = lazy(() => import('../pages/admin/cms/Form'));
+const AdminHomepageBuilder = lazy(() => import('../pages/admin/homepage/Builder'));
+
+// Blog Routes
+const AdminBlogs = lazy(() => import('../pages/admin/blogs/List'));
+const AdminBlogForm = lazy(() => import('../pages/admin/blogs/Form'));
+const AdminBlogCategories = lazy(() => import('../pages/admin/blogCategories/List'));
+
+// Marketing Routes
+const AdminCampaigns = lazy(() => import('../pages/admin/marketing/Campaigns'));
+const AdminAnnouncements = lazy(() => import('../pages/admin/marketing/Announcements'));
+const AdminPopups = lazy(() => import('../pages/admin/marketing/Popups'));
+const AdminNewsletters = lazy(() => import('../pages/admin/marketing/Newsletters'));
+
 // Master Data routes
 const AdminAttributes = lazy(() => import('../pages/admin/attributes/List'));
 const AdminOrderStatuses = lazy(() => import('../pages/admin/orderStatuses/List'));
@@ -97,6 +113,10 @@ export default function AdminRoutes() {
             <Route path="collections" element={<AdminCollections />} />
             <Route path="coupons" element={<AdminCoupons />} />
             <Route path="banners" element={<AdminBanners />} />
+            <Route path="campaigns" element={<AdminCampaigns />} />
+            <Route path="announcements" element={<AdminAnnouncements />} />
+            <Route path="popups" element={<AdminPopups />} />
+            <Route path="newsletters" element={<AdminNewsletters />} />
             <Route path="analytics" element={<AdminAnalytics />} />
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="settings" element={<AdminSettings />} />
@@ -115,6 +135,18 @@ export default function AdminRoutes() {
             <Route path="seo" element={<AdminSeo />} />
             <Route path="media" element={<AdminMedia />} />
             <Route path="notification-templates" element={<AdminNotificationTemplates />} />
+
+            {/* CMS Routes */}
+            <Route path="cms-pages" element={<AdminCmsPages />} />
+            <Route path="cms-pages/create" element={<AdminCmsPageForm />} />
+            <Route path="cms-pages/edit/:id" element={<AdminCmsPageForm />} />
+            <Route path="homepage" element={<AdminHomepageBuilder />} />
+
+            {/* Blog Routes */}
+            <Route path="blogs" element={<AdminBlogs />} />
+            <Route path="blogs/create" element={<AdminBlogForm />} />
+            <Route path="blogs/edit/:id" element={<AdminBlogForm />} />
+            <Route path="blogs/categories" element={<AdminBlogCategories />} />
             <Route path="brands" element={<AdminBrands />} />
             <Route path="colors" element={<AdminColors />} />
             <Route path="sizes" element={<AdminSizes />} />

@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Services\CartService;
 use App\Services\CouponService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -34,7 +35,7 @@ class CartController extends Controller
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'variant_id' => 'nullable|exists:product_variants,id',
-            'quantity'   => 'sometimes|integer|min:1',
+            'quantity' => 'sometimes|integer|min:1',
         ]);
 
         $cart = $this->getCart($request);
@@ -59,7 +60,7 @@ class CartController extends Controller
     public function update(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'id'       => 'required|exists:cart_items,id',
+            'id' => 'required|exists:cart_items,id',
             'quantity' => 'required|integer|min:1',
         ]);
 
@@ -82,7 +83,7 @@ class CartController extends Controller
     {
         try {
             $this->cartService->removeItem((int) $id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Cart item not found');
         }
 
@@ -139,7 +140,7 @@ class CartController extends Controller
 
         try {
             $this->cartService->saveForLater($validated['id']);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Cart item not found');
         }
 

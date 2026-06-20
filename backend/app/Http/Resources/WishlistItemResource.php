@@ -14,7 +14,7 @@ class WishlistItemResource extends JsonResource
             'product_id' => $this->product_id,
             'variant_id' => $this->variant_id,
             'created_at' => $this->created_at,
-            'product' => $this->whenLoaded('product', fn() => [
+            'product' => $this->whenLoaded('product', fn () => [
                 'id' => $this->product->id,
                 'name' => $this->product->name,
                 'slug' => $this->product->slug,
@@ -24,7 +24,7 @@ class WishlistItemResource extends JsonResource
                 'stock' => $this->product->stock,
                 'thumbnail' => $this->product->thumbnail,
             ]),
-            'variant' => $this->whenLoaded('variant', fn() => [
+            'variant' => $this->whenLoaded('variant', fn () => [
                 'id' => $this->variant->id,
                 'sku' => $this->variant->sku,
                 'price' => (float) $this->variant->price,

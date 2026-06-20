@@ -23,9 +23,7 @@ use OpenApi\Attributes as OA;
         description: 'Production Server'
     ),
 ]
-interface OpenApi
-{
-}
+interface OpenApi {}
 
 #[
     OA\Schema(
@@ -44,9 +42,7 @@ interface OpenApi
         type: 'object'
     )
 ]
-interface UserSchema
-{
-}
+interface UserSchema {}
 
 #[
     OA\Schema(
@@ -61,9 +57,7 @@ interface UserSchema
         type: 'object'
     )
 ]
-interface AuthTokensSchema
-{
-}
+interface AuthTokensSchema {}
 
 #[
     OA\Schema(
@@ -82,9 +76,7 @@ interface AuthTokensSchema
         type: 'object'
     )
 ]
-interface SuccessResponseSchema
-{
-}
+interface SuccessResponseSchema {}
 
 #[
     OA\Schema(
@@ -98,9 +90,7 @@ interface SuccessResponseSchema
         type: 'object'
     )
 ]
-interface ErrorResponseSchema
-{
-}
+interface ErrorResponseSchema {}
 
 #[
     OA\Schema(
@@ -116,9 +106,7 @@ interface ErrorResponseSchema
         type: 'object'
     )
 ]
-interface RegisterRequestSchema
-{
-}
+interface RegisterRequestSchema {}
 
 #[
     OA\Schema(
@@ -132,9 +120,7 @@ interface RegisterRequestSchema
         type: 'object'
     )
 ]
-interface LoginRequestSchema
-{
-}
+interface LoginRequestSchema {}
 
 #[
     OA\Schema(
@@ -146,9 +132,7 @@ interface LoginRequestSchema
         type: 'object'
     )
 ]
-interface RefreshTokenRequestSchema
-{
-}
+interface RefreshTokenRequestSchema {}
 
 #[
     OA\Schema(
@@ -160,9 +144,7 @@ interface RefreshTokenRequestSchema
         type: 'object'
     )
 ]
-interface ForgotPasswordRequestSchema
-{
-}
+interface ForgotPasswordRequestSchema {}
 
 #[
     OA\Schema(
@@ -177,6 +159,4 @@ interface ForgotPasswordRequestSchema
         type: 'object'
     )
 ]
-interface ResetPasswordRequestSchema
-{
-}
+interface ResetPasswordRequestSchema {}

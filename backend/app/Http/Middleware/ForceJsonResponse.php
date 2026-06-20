@@ -3,7 +3,9 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ForceJsonResponse
 {
@@ -13,11 +15,11 @@ class ForceJsonResponse
 
         $response = $next($request);
 
-        if ($response instanceof \Symfony\Component\HttpFoundation\BinaryFileResponse) {
+        if ($response instanceof BinaryFileResponse) {
             return $response;
         }
 
-        if ($response instanceof \Illuminate\Http\RedirectResponse) {
+        if ($response instanceof RedirectResponse) {
             return response()->json([
                 'success' => false,
                 'message' => 'Redirect not allowed for API requests',

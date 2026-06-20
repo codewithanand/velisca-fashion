@@ -15,9 +15,9 @@ class AttributeController extends Controller
     public function index(Request $request)
     {
         $attributes = Attribute::withCount('values')
-            ->when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->when($request->type, fn($q, $t) => $q->where('type', $t))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+            ->when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->type, fn ($q, $t) => $q->where('type', $t))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('name')
             ->get();
 
@@ -44,7 +44,9 @@ class AttributeController extends Controller
     public function show($id)
     {
         $attribute = Attribute::with('values')->find($id);
-        if (!$attribute) return $this->notFound('Attribute not found');
+        if (! $attribute) {
+            return $this->notFound('Attribute not found');
+        }
 
         return $this->success('Attribute retrieved', ['attribute' => $attribute]);
     }
@@ -52,18 +54,20 @@ class AttributeController extends Controller
     public function update(Request $request, $id)
     {
         $attribute = Attribute::find($id);
-        if (!$attribute) return $this->notFound('Attribute not found');
+        if (! $attribute) {
+            return $this->notFound('Attribute not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:attributes,slug,' . $id,
+            'slug' => 'sometimes|string|max:255|unique:attributes,slug,'.$id,
             'type' => 'nullable|string|max:50',
             'is_filterable' => 'nullable|boolean',
             'is_required' => 'nullable|boolean',
             'status' => 'nullable|boolean',
         ]);
 
-        if (isset($validated['name']) && !isset($validated['slug'])) {
+        if (isset($validated['name']) && ! isset($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['name']);
         }
 
@@ -75,10 +79,13 @@ class AttributeController extends Controller
     public function destroy($id)
     {
         $attribute = Attribute::find($id);
-        if (!$attribute) return $this->notFound('Attribute not found');
+        if (! $attribute) {
+            return $this->notFound('Attribute not found');
+        }
 
         $attribute->values()->delete();
         $attribute->delete();
+
         return $this->success('Attribute deleted');
     }
 }

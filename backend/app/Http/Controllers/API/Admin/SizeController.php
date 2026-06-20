@@ -41,7 +41,9 @@ class SizeController extends Controller
     public function update(Request $request, $id)
     {
         $size = Size::find($id);
-        if (!$size) return $this->notFound('Size not found');
+        if (! $size) {
+            return $this->notFound('Size not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -64,8 +66,11 @@ class SizeController extends Controller
     public function destroy($id)
     {
         $size = Size::find($id);
-        if (!$size) return $this->notFound('Size not found');
+        if (! $size) {
+            return $this->notFound('Size not found');
+        }
         $size->delete();
+
         return $this->success('Size deleted');
     }
 }

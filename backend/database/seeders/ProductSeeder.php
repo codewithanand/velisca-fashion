@@ -238,7 +238,9 @@ class ProductSeeder extends Seeder
         // ========== Product Images (placeholder) ==========
         $productIds = Product::pluck('id');
         foreach ($productIds as $index => $pid) {
-            if (ProductImage::where('product_id', $pid)->exists()) continue;
+            if (ProductImage::where('product_id', $pid)->exists()) {
+                continue;
+            }
             ProductImage::create([
                 'product_id' => $pid,
                 'image' => "/images/products/product-{$pid}.jpg",
@@ -254,7 +256,7 @@ class ProductSeeder extends Seeder
         }
 
         // ========== Product Variants ==========
-        if (!ProductVariant::exists()) {
+        if (! ProductVariant::exists()) {
             $fashionProducts = Product::whereIn('category_id', Category::where('parent_id', $fashion->id)->pluck('id'))->get();
             $sizeIds = Size::where('category', 'clothing')->pluck('id');
             $colorIds = Color::whereIn('name', ['Pink', 'Beige', 'Black', 'White'])->pluck('id');

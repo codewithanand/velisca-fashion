@@ -13,7 +13,9 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     public const ROLE_ADMIN = 'admin';
+
     public const ROLE_STAFF = 'staff';
+
     public const ROLE_CUSTOMER = 'customer';
 
     public const ROLES = [
@@ -23,7 +25,7 @@ class User extends Authenticatable
     ];
 
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
         'name',

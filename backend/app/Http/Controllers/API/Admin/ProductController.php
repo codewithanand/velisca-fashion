@@ -8,6 +8,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Services\ProductService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -32,10 +33,11 @@ class ProductController extends Controller
     {
         try {
             $product = $this->productService->getById($id);
+
             return $this->success('Product retrieved', [
                 'product' => new ProductResource($product),
             ]);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Product not found');
         }
     }
@@ -97,18 +99,18 @@ class ProductController extends Controller
     {
         try {
             $product = Product::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Product not found');
         }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:products,slug,' . $id,
+            'slug' => 'sometimes|string|max:255|unique:products,slug,'.$id,
             'category_id' => 'nullable|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
             'short_description' => 'nullable|string|max:500',
             'description' => 'nullable|string',
-            'sku' => 'nullable|string|max:100|unique:products,sku,' . $id,
+            'sku' => 'nullable|string|max:100|unique:products,sku,'.$id,
             'price' => 'sometimes|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0|lt:price',
             'cost_price' => 'nullable|numeric|min:0',
@@ -154,7 +156,7 @@ class ProductController extends Controller
     {
         try {
             $product = Product::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Product not found');
         }
 
@@ -167,7 +169,7 @@ class ProductController extends Controller
     {
         try {
             $product = Product::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Product not found');
         }
 
@@ -182,7 +184,7 @@ class ProductController extends Controller
     {
         try {
             $product = Product::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Product not found');
         }
 
@@ -197,7 +199,7 @@ class ProductController extends Controller
     {
         try {
             $product = Product::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Product not found');
         }
 

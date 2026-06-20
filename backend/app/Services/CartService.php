@@ -6,7 +6,6 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CartService
@@ -26,7 +25,7 @@ class CartService
                 ->first();
         }
 
-        if (!$cart && $sessionId) {
+        if (! $cart && $sessionId) {
             $cart = Cart::where('session_id', $sessionId)
                 ->where('status', 'active')
                 ->whereNull('user_id')
@@ -34,11 +33,11 @@ class CartService
                 ->first();
         }
 
-        if (!$cart) {
+        if (! $cart) {
             $cart = Cart::create([
-                'user_id'    => $userId,
+                'user_id' => $userId,
                 'session_id' => $sessionId,
-                'status'     => 'active',
+                'status' => 'active',
             ]);
         }
 
@@ -81,17 +80,17 @@ class CartService
             $price = $this->resolvePrice($product, $variant);
 
             $item = CartItem::create([
-                'cart_id'               => $cart->id,
-                'product_id'            => $productId,
-                'variant_id'            => $variantId,
+                'cart_id' => $cart->id,
+                'product_id' => $productId,
+                'variant_id' => $variantId,
                 'product_name_snapshot' => $product->name,
-                'variant_snapshot'      => $variant ? $variant->load('color', 'size')->toArray() : null,
-                'sku_snapshot'          => $variant ? $variant->sku : $product->sku,
-                'price_snapshot'        => $product->price,
-                'sale_price_snapshot'   => $product->sale_price,
-                'quantity'              => $quantity,
-                'subtotal'              => $price * $quantity,
-                'save_for_later'        => false,
+                'variant_snapshot' => $variant ? $variant->load('color', 'size')->toArray() : null,
+                'sku_snapshot' => $variant ? $variant->sku : $product->sku,
+                'price_snapshot' => $product->price,
+                'sale_price_snapshot' => $product->sale_price,
+                'quantity' => $quantity,
+                'subtotal' => $price * $quantity,
+                'save_for_later' => false,
             ]);
 
             return $item->load('product.primaryImage', 'variant.color', 'variant.size');
@@ -153,12 +152,12 @@ class CartService
         $grandTotal = max(0, $subtotal - $discount + $shippingCharge + $tax);
 
         return [
-            'subtotal'       => (float) $subtotal,
-            'discount'       => (float) $discount,
+            'subtotal' => (float) $subtotal,
+            'discount' => (float) $discount,
             'shipping_charge' => (float) $shippingCharge,
-            'tax'            => (float) $tax,
-            'grand_total'    => (float) $grandTotal,
-            'items_count'    => $cart->itemsCount,
+            'tax' => (float) $tax,
+            'grand_total' => (float) $grandTotal,
+            'items_count' => $cart->itemsCount,
         ];
     }
 
@@ -188,7 +187,7 @@ class CartService
     {
         $item = CartItem::findOrFail($cartItemId);
         $item->update([
-            'save_for_later' => !$item->save_for_later,
+            'save_for_later' => ! $item->save_for_later,
         ]);
 
         return $item->fresh()->load('product.primaryImage', 'variant.color', 'variant.size');
@@ -202,7 +201,7 @@ class CartService
                 ->whereNull('user_id')
                 ->first();
 
-            if (!$guestCart || $guestCart->items()->count() === 0) {
+            if (! $guestCart || $guestCart->items()->count() === 0) {
                 return $this->getOrCreateCart($userId);
             }
 
@@ -210,8 +209,9 @@ class CartService
                 ->where('status', 'active')
                 ->first();
 
-            if (!$userCart) {
+            if (! $userCart) {
                 $guestCart->update(['user_id' => $userId]);
+
                 return $guestCart->fresh()->load('activeItems.product.primaryImage', 'activeItems.variant.color', 'activeItems.variant.size');
             }
 
@@ -229,17 +229,17 @@ class CartService
                     ]);
                 } else {
                     CartItem::create([
-                        'cart_id'               => $userCart->id,
-                        'product_id'            => $guestItem->product_id,
-                        'variant_id'            => $guestItem->variant_id,
+                        'cart_id' => $userCart->id,
+                        'product_id' => $guestItem->product_id,
+                        'variant_id' => $guestItem->variant_id,
                         'product_name_snapshot' => $guestItem->product_name_snapshot,
-                        'variant_snapshot'      => $guestItem->variant_snapshot,
-                        'sku_snapshot'          => $guestItem->sku_snapshot,
-                        'price_snapshot'        => $guestItem->price_snapshot,
-                        'sale_price_snapshot'   => $guestItem->sale_price_snapshot,
-                        'quantity'              => $guestItem->quantity,
-                        'subtotal'              => $guestItem->subtotal,
-                        'save_for_later'        => false,
+                        'variant_snapshot' => $guestItem->variant_snapshot,
+                        'sku_snapshot' => $guestItem->sku_snapshot,
+                        'price_snapshot' => $guestItem->price_snapshot,
+                        'sale_price_snapshot' => $guestItem->sale_price_snapshot,
+                        'quantity' => $guestItem->quantity,
+                        'subtotal' => $guestItem->subtotal,
+                        'save_for_later' => false,
                     ]);
                 }
             }
@@ -261,8 +261,9 @@ class CartService
             $product = $item->product;
             $variant = $item->variant;
 
-            if (!$product || ($item->variant_id && !$variant)) {
+            if (! $product || ($item->variant_id && ! $variant)) {
                 $item->delete();
+
                 continue;
             }
 
@@ -270,11 +271,11 @@ class CartService
 
             $item->update([
                 'product_name_snapshot' => $product->name,
-                'variant_snapshot'      => $variant?->load('color', 'size')->toArray(),
-                'sku_snapshot'          => $variant?->sku ?? $product->sku,
-                'price_snapshot'        => $product->price,
-                'sale_price_snapshot'   => $product->sale_price,
-                'subtotal'              => $price * $item->quantity,
+                'variant_snapshot' => $variant?->load('color', 'size')->toArray(),
+                'sku_snapshot' => $variant?->sku ?? $product->sku,
+                'price_snapshot' => $product->price,
+                'sale_price_snapshot' => $product->sale_price,
+                'subtotal' => $price * $item->quantity,
             ]);
         }
     }
@@ -290,6 +291,7 @@ class CartService
         if ($product->sale_price) {
             return (float) $product->sale_price;
         }
+
         return (float) ($product->price ?? 0);
     }
 }

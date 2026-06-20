@@ -2,8 +2,6 @@
 
 namespace App\Services\Auth;
 
-use App\Models\User;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class RefreshTokenService
@@ -16,12 +14,13 @@ class RefreshTokenService
     {
         $personalAccessToken = $this->tokenService->findTokenByRefreshToken($refreshToken);
 
-        if (!$personalAccessToken) {
+        if (! $personalAccessToken) {
             return null;
         }
 
         if ($this->isExpired($personalAccessToken)) {
             $personalAccessToken->delete();
+
             return null;
         }
 

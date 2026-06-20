@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class Coupon extends Model
 {
@@ -23,17 +23,31 @@ class Coupon extends Model
 
     public function isValid(): bool
     {
-        if (!$this->status) return false;
-        if ($this->starts_at && Carbon::parse($this->starts_at)->isFuture()) return false;
-        if ($this->expires_at && Carbon::parse($this->expires_at)->isPast()) return false;
-        if ($this->usage_limit && $this->used_count >= $this->usage_limit) return false;
+        if (! $this->status) {
+            return false;
+        }
+        if ($this->starts_at && Carbon::parse($this->starts_at)->isFuture()) {
+            return false;
+        }
+        if ($this->expires_at && Carbon::parse($this->expires_at)->isPast()) {
+            return false;
+        }
+        if ($this->usage_limit && $this->used_count >= $this->usage_limit) {
+            return false;
+        }
+
         return true;
     }
 
     public function isApplicable(float $subtotal): bool
     {
-        if (!$this->isValid()) return false;
-        if ($this->minimum_amount && $subtotal < $this->minimum_amount) return false;
+        if (! $this->isValid()) {
+            return false;
+        }
+        if ($this->minimum_amount && $subtotal < $this->minimum_amount) {
+            return false;
+        }
+
         return true;
     }
 

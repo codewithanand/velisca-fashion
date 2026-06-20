@@ -61,7 +61,7 @@ class RefreshTokenController extends Controller
     {
         $result = $this->refreshTokenService->refresh($request->validated()['refresh_token']);
 
-        if (!$result) {
+        if (! $result) {
             return $this->error('Invalid or expired refresh token', null, 401);
         }
 

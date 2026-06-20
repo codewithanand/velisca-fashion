@@ -242,3 +242,75 @@ export const adminNotificationTemplateService = {
   update: (id, data) => api.put(`/admin/notification-templates/${id}`, data),
   delete: (id) => api.delete(`/admin/notification-templates/${id}`),
 };
+
+export const adminCmsPageService = {
+  getAll: (params) => api.get('/admin/cms-pages', params),
+  getById: (id) => api.get(`/admin/cms-pages/${id}`),
+  create: (data) => api.post('/admin/cms-pages', data),
+  update: (id, data) => api.put(`/admin/cms-pages/${id}`, data),
+  delete: (id) => api.delete(`/admin/cms-pages/${id}`),
+};
+
+export const adminBlogService = {
+  getAll: (params) => api.get('/admin/blogs', params),
+  getById: (id) => api.get(`/admin/blogs/${id}`),
+  create: (data) => api.post('/admin/blogs', data),
+  update: (id, data) => api.put(`/admin/blogs/${id}`, data),
+  delete: (id) => api.delete(`/admin/blogs/${id}`),
+};
+
+export const adminBlogCategoryService = {
+  getAll: () => api.get('/admin/blog-categories'),
+  getById: (id) => api.get(`/admin/blog-categories/${id}`),
+  create: (data) => api.post('/admin/blog-categories', data),
+  update: (id, data) => api.put(`/admin/blog-categories/${id}`, data),
+  delete: (id) => api.delete(`/admin/blog-categories/${id}`),
+};
+
+export const adminHomepageService = {
+  getLayout: () => api.get('/admin/homepage/layout'),
+  getLayouts: () => api.get('/admin/homepage/layouts'),
+  createLayout: (data) => api.post('/admin/homepage/layouts', data),
+  updateLayout: (id, data) => api.put(`/admin/homepage/layouts/${id}`, data),
+  deleteLayout: (id) => api.delete(`/admin/homepage/layouts/${id}`),
+  getSections: (params) => api.get('/admin/homepage/sections', params),
+  createSection: (data) => api.post('/admin/homepage/sections', data),
+  updateSection: (id, data) => api.put(`/admin/homepage/sections/${id}`, data),
+  deleteSection: (id) => api.delete(`/admin/homepage/sections/${id}`),
+  reorderSections: (data) => api.post('/admin/homepage/sections/reorder', data),
+  createSectionItem: (data) => api.post('/admin/homepage/section-items', data),
+  updateSectionItem: (id, data) => api.put(`/admin/homepage/section-items/${id}`, data),
+  deleteSectionItem: (id) => api.delete(`/admin/homepage/section-items/${id}`),
+};
+
+export const adminAnnouncementService = {
+  getAll: () => api.get('/admin/announcements'),
+  getById: (id) => api.get(`/admin/announcements/${id}`),
+  create: (data) => api.post('/admin/announcements', data),
+  update: (id, data) => api.put(`/admin/announcements/${id}`, data),
+  delete: (id) => api.delete(`/admin/announcements/${id}`),
+};
+
+export const adminPopupService = {
+  getAll: () => api.get('/admin/popups'),
+  getById: (id) => api.get(`/admin/popups/${id}`),
+  create: (data) => api.post('/admin/popups', data),
+  update: (id, data) => api.put(`/admin/popups/${id}`, data),
+  delete: (id) => api.delete(`/admin/popups/${id}`),
+};
+
+export const adminNewsletterService = {
+  getAll: (params) => api.get('/admin/newsletters', params),
+  create: (data) => api.post('/admin/newsletters', data),
+  update: (id, data) => api.put(`/admin/newsletters/${id}`, data),
+  delete: (id) => api.delete(`/admin/newsletters/${id}`),
+  export: () => api.get('/admin/newsletters/export'),
+};
+
+export const adminCampaignService = {
+  getAll: (params) => api.get('/admin/campaigns', params),
+  getById: (id) => api.get(`/admin/campaigns/${id}`),
+  create: (data) => api.post('/admin/campaigns', data),
+  update: (id, data) => api.put(`/admin/campaigns/${id}`, data),
+  delete: (id) => api.delete(`/admin/campaigns/${id}`),
+};

@@ -13,9 +13,10 @@ class BannerController extends Controller
 
     public function index(Request $request)
     {
-        $banners = Banner::when($request->search, fn($q, $s) => $q->where('title', 'like', "%{$s}%"))
-            ->when($request->type, fn($q, $t) => $q->where('type', $t))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+        $banners = Banner::when($request->search, fn ($q, $s) => $q->where('title', 'like', "%{$s}%"))
+            ->when($request->banner_type, fn ($q, $t) => $q->where('banner_type', $t))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
+            ->orderBy('priority', 'desc')
             ->orderBy('sort_order')
             ->get();
 
@@ -26,15 +27,19 @@ class BannerController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'type' => 'required|string|max:50',
+            'banner_type' => 'nullable|string|max:50',
             'image' => 'nullable|string',
             'mobile_image' => 'nullable|string',
             'link' => 'nullable|string',
+            'link_type' => 'nullable|string|max:50',
+            'link_reference' => 'nullable|integer',
             'button_text' => 'nullable|string|max:100',
             'sort_order' => 'nullable|integer|min:0',
+            'priority' => 'nullable|integer|min:0',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'status' => 'nullable|boolean',
+            'homepage_visibility' => 'nullable|boolean',
         ]);
 
         $banner = Banner::create($validated);
@@ -45,7 +50,9 @@ class BannerController extends Controller
     public function show($id)
     {
         $banner = Banner::find($id);
-        if (!$banner) return $this->notFound('Banner not found');
+        if (! $banner) {
+            return $this->notFound('Banner not found');
+        }
 
         return $this->success('Banner retrieved', ['banner' => $banner]);
     }
@@ -53,42 +60,51 @@ class BannerController extends Controller
     public function update(Request $request, $id)
     {
         $banner = Banner::find($id);
-        if (!$banner) return $this->notFound('Banner not found');
+        if (! $banner) {
+            return $this->notFound('Banner not found');
+        }
 
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
-            'type' => 'sometimes|string|max:50',
+            'banner_type' => 'nullable|string|max:50',
             'image' => 'nullable|string',
             'mobile_image' => 'nullable|string',
             'link' => 'nullable|string',
+            'link_type' => 'nullable|string|max:50',
+            'link_reference' => 'nullable|integer',
             'button_text' => 'nullable|string|max:100',
             'sort_order' => 'nullable|integer|min:0',
+            'priority' => 'nullable|integer|min:0',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'status' => 'nullable|boolean',
+            'homepage_visibility' => 'nullable|boolean',
         ]);
 
         $banner->update($validated);
 
-        return $this->success('Banner updated', ['banner' => $banner]);
+        return $this->success('Banner updated', ['banner' => $banner->fresh()]);
     }
 
     public function destroy($id)
     {
         $banner = Banner::find($id);
-        if (!$banner) return $this->notFound('Banner not found');
-
+        if (! $banner) {
+            return $this->notFound('Banner not found');
+        }
         $banner->delete();
+
         return $this->success('Banner deleted');
     }
 
     public function toggle($id)
     {
         $banner = Banner::find($id);
-        if (!$banner) return $this->notFound('Banner not found');
+        if (! $banner) {
+            return $this->notFound('Banner not found');
+        }
+        $banner->update(['status' => ! $banner->status]);
 
-        $banner->update(['status' => !$banner->status]);
-
-        return $this->success('Banner status toggled', ['banner' => $banner]);
+        return $this->success('Banner status toggled', ['banner' => $banner->fresh()]);
     }
 }

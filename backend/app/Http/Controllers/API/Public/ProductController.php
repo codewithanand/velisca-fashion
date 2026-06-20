@@ -8,6 +8,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Services\ProductService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -37,10 +38,11 @@ class ProductController extends Controller
     {
         try {
             $product = $this->productService->getBySlug($slug);
+
             return $this->success('Product retrieved', [
                 'product' => new ProductResource($product),
             ]);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Product not found');
         }
     }
@@ -93,7 +95,7 @@ class ProductController extends Controller
     {
         try {
             $product = Product::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Product not found');
         }
 
@@ -102,7 +104,7 @@ class ProductController extends Controller
             ->where('id', '!=', $product->id)
             ->where(function ($q) use ($product) {
                 $q->where('category_id', $product->category_id)
-                  ->orWhereHas('tags', fn($t) => $t->whereIn('tags.id', $product->tags->pluck('id')));
+                    ->orWhereHas('tags', fn ($t) => $t->whereIn('tags.id', $product->tags->pluck('id')));
             })
             ->limit(8)->get();
 
@@ -114,7 +116,7 @@ class ProductController extends Controller
     public function search(Request $request)
     {
         $query = $request->get('q');
-        if (!$query) {
+        if (! $query) {
             return $this->error('Search query is required');
         }
 
@@ -122,9 +124,9 @@ class ProductController extends Controller
             ->published()->inStock()
             ->where(function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('sku', 'like', "%{$query}%")
-                  ->orWhere('short_description', 'like', "%{$query}%")
-                  ->orWhereHas('tags', fn($t) => $t->where('name', 'like', "%{$query}%"));
+                    ->orWhere('sku', 'like', "%{$query}%")
+                    ->orWhere('short_description', 'like', "%{$query}%")
+                    ->orWhereHas('tags', fn ($t) => $t->where('name', 'like', "%{$query}%"));
             })
             ->limit(20)->get();
 

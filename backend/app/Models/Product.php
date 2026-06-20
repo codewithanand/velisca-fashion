@@ -109,14 +109,15 @@ class Product extends Model
 
     public function getHasSaleAttribute(): bool
     {
-        return !is_null($this->sale_price) && $this->sale_price < $this->price;
+        return ! is_null($this->sale_price) && $this->sale_price < $this->price;
     }
 
     public function getDiscountPercentAttribute(): ?int
     {
-        if (!$this->has_sale || $this->price == 0) {
+        if (! $this->has_sale || $this->price == 0) {
             return null;
         }
+
         return (int) round((1 - $this->sale_price / $this->price) * 100);
     }
 

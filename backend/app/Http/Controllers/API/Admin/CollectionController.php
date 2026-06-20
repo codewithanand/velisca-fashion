@@ -15,7 +15,7 @@ class CollectionController extends Controller
     public function index(Request $request)
     {
         $collections = Collection::withCount('products')
-            ->when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
             ->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 20));
 
@@ -33,7 +33,9 @@ class CollectionController extends Controller
     public function show($id)
     {
         $collection = Collection::with('products')->find($id);
-        if (!$collection) return $this->notFound('Collection not found');
+        if (! $collection) {
+            return $this->notFound('Collection not found');
+        }
 
         return $this->success('Collection retrieved', ['collection' => $collection]);
     }
@@ -56,7 +58,7 @@ class CollectionController extends Controller
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
         $collection = Collection::create($validated);
 
-        if (!empty($validated['products'])) {
+        if (! empty($validated['products'])) {
             $collection->products()->sync($validated['products']);
         }
 
@@ -66,11 +68,13 @@ class CollectionController extends Controller
     public function update(Request $request, $id)
     {
         $collection = Collection::find($id);
-        if (!$collection) return $this->notFound('Collection not found');
+        if (! $collection) {
+            return $this->notFound('Collection not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:collections,slug,' . $id,
+            'slug' => 'sometimes|string|max:255|unique:collections,slug,'.$id,
             'description' => 'nullable|string',
             'image' => 'nullable|string',
             'banner' => 'nullable|string',
@@ -81,7 +85,7 @@ class CollectionController extends Controller
             'products.*' => 'exists:products,id',
         ]);
 
-        if (isset($validated['name']) && !isset($validated['slug'])) {
+        if (isset($validated['name']) && ! isset($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['name']);
         }
 
@@ -97,7 +101,9 @@ class CollectionController extends Controller
     public function destroy($id)
     {
         $collection = Collection::find($id);
-        if (!$collection) return $this->notFound('Collection not found');
+        if (! $collection) {
+            return $this->notFound('Collection not found');
+        }
 
         $collection->delete();
 

@@ -185,6 +185,30 @@ const routes = [
     showHeader: false,
     dynamicTitle: true,
   },
+  {
+    path: '/page/:slug',
+    component: lazy(() => import('../pages/cms/Page')),
+    title: '',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: false,
+  },
+  {
+    path: '/blog',
+    component: lazy(() => import('../pages/blog/List')),
+    title: 'Our Journal',
+    showBack: true,
+    showBottomNav: true,
+    showHeader: true,
+  },
+  {
+    path: '/blog/:slug',
+    component: lazy(() => import('../pages/blog/Details')),
+    title: '',
+    showBack: false,
+    showBottomNav: false,
+    showHeader: false,
+  },
 ];
 
 export const authRoutes = ['/login', '/signup', '/onboarding', '/forgot-password', '/reset-password'];

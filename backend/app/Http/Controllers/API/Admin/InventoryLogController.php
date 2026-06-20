@@ -14,12 +14,12 @@ class InventoryLogController extends Controller
     public function index(Request $request)
     {
         $logs = InventoryLog::with(['product', 'warehouse'])
-            ->when($request->product_id, fn($q, $v) => $q->where('product_id', $v))
-            ->when($request->variant_id, fn($q, $v) => $q->where('variant_id', $v))
-            ->when($request->warehouse_id, fn($q, $v) => $q->where('warehouse_id', $v))
-            ->when($request->movement_type, fn($q, $v) => $q->where('movement_type', $v))
-            ->when($request->from, fn($q, $v) => $q->whereDate('created_at', '>=', $v))
-            ->when($request->to, fn($q, $v) => $q->whereDate('created_at', '<=', $v))
+            ->when($request->product_id, fn ($q, $v) => $q->where('product_id', $v))
+            ->when($request->variant_id, fn ($q, $v) => $q->where('variant_id', $v))
+            ->when($request->warehouse_id, fn ($q, $v) => $q->where('warehouse_id', $v))
+            ->when($request->movement_type, fn ($q, $v) => $q->where('movement_type', $v))
+            ->when($request->from, fn ($q, $v) => $q->whereDate('created_at', '>=', $v))
+            ->when($request->to, fn ($q, $v) => $q->whereDate('created_at', '<=', $v))
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 50);
 

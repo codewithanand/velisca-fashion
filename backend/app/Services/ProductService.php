@@ -15,14 +15,14 @@ class ProductService
     {
         $query = Product::with([
             'category', 'primaryImage', 'brand',
-            'variants' => fn($q) => $q->with('color', 'size'),
+            'variants' => fn ($q) => $q->with('color', 'size'),
         ]);
 
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhere('short_description', 'like', "%{$search}%");
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('short_description', 'like', "%{$search}%");
             });
         }
 
@@ -50,19 +50,19 @@ class ProductService
         if ($minPrice = $request->get('min_price')) {
             $query->where(function ($q) use ($minPrice) {
                 $q->where('price', '>=', $minPrice)
-                  ->orWhere('sale_price', '>=', $minPrice);
+                    ->orWhere('sale_price', '>=', $minPrice);
             });
         }
 
         if ($maxPrice = $request->get('max_price')) {
             $query->where(function ($q) use ($maxPrice) {
                 $q->where('price', '<=', $maxPrice)
-                  ->orWhere('sale_price', '<=', $maxPrice);
+                    ->orWhere('sale_price', '<=', $maxPrice);
             });
         }
 
         if ($tag = $request->get('tag')) {
-            $query->whereHas('tags', fn($q) => $q->where('name', $tag));
+            $query->whereHas('tags', fn ($q) => $q->where('name', $tag));
         }
 
         $sortField = match ($request->get('sort')) {
@@ -114,15 +114,15 @@ class ProductService
 
             $product = Product::create($data);
 
-            if (!empty($data['images'])) {
+            if (! empty($data['images'])) {
                 $this->syncImages($product, $data['images']);
             }
 
-            if (!empty($data['variants'])) {
+            if (! empty($data['variants'])) {
                 $this->syncVariants($product, $data['variants']);
             }
 
-            if (!empty($data['tags'])) {
+            if (! empty($data['tags'])) {
                 $product->tags()->sync($data['tags']);
             }
 
@@ -135,11 +135,11 @@ class ProductService
     public function update(Product $product, array $data): Product
     {
         return DB::transaction(function () use ($product, $data) {
-            if (isset($data['name']) && !isset($data['slug'])) {
+            if (isset($data['name']) && ! isset($data['slug'])) {
                 $data['slug'] = Str::slug($data['name']);
             }
 
-            if (isset($data['status']) && $data['status'] === 'published' && !$product->published_at) {
+            if (isset($data['status']) && $data['status'] === 'published' && ! $product->published_at) {
                 $data['published_at'] = now();
             }
 
@@ -172,9 +172,9 @@ class ProductService
     {
         return DB::transaction(function () use ($product) {
             $copy = $product->replicate();
-            $copy->name = $product->name . ' (Copy)';
-            $copy->slug = $product->slug . '-copy-' . uniqid();
-            $copy->sku = $product->sku ? $product->sku . '-COPY' : null;
+            $copy->name = $product->name.' (Copy)';
+            $copy->slug = $product->slug.'-copy-'.uniqid();
+            $copy->sku = $product->sku ? $product->sku.'-COPY' : null;
             $copy->status = 'draft';
             $copy->save();
 
@@ -194,7 +194,8 @@ class ProductService
 
     public function toggleFeatured(Product $product): Product
     {
-        $product->update(['featured' => !$product->featured]);
+        $product->update(['featured' => ! $product->featured]);
+
         return $product;
     }
 
@@ -209,6 +210,7 @@ class ProductService
             'status' => $newStatus,
             'published_at' => $newStatus === 'published' ? now() : $product->published_at,
         ]);
+
         return $product;
     }
 
@@ -232,13 +234,13 @@ class ProductService
             ->published()->inStock();
 
         if ($category = $request->get('category')) {
-            $query->whereHas('category', fn($q) => $q->where('slug', $category));
+            $query->whereHas('category', fn ($q) => $q->where('slug', $category));
         }
 
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhereHas('tags', fn($t) => $t->where('name', 'like', "%{$search}%"));
+                    ->orWhereHas('tags', fn ($t) => $t->where('name', 'like', "%{$search}%"));
             });
         }
 
@@ -264,11 +266,11 @@ class ProductService
 
     private function syncImages(Product $product, array $images): void
     {
-        $existingIds = collect($images)->filter(fn($i) => !empty($i['id']))->pluck('id');
+        $existingIds = collect($images)->filter(fn ($i) => ! empty($i['id']))->pluck('id');
         $product->images()->whereNotIn('id', $existingIds)->delete();
 
         foreach ($images as $i => $image) {
-            if (!empty($image['id'])) {
+            if (! empty($image['id'])) {
                 ProductImage::where('id', $image['id'])->update([
                     'image' => $image['image'],
                     'sort_order' => $image['sort_order'] ?? $i,
@@ -288,11 +290,11 @@ class ProductService
 
     private function syncVariants(Product $product, array $variants): void
     {
-        $existingIds = collect($variants)->filter(fn($v) => !empty($v['id']))->pluck('id');
+        $existingIds = collect($variants)->filter(fn ($v) => ! empty($v['id']))->pluck('id');
         $product->variants()->whereNotIn('id', $existingIds)->delete();
 
         foreach ($variants as $variant) {
-            if (!empty($variant['id'])) {
+            if (! empty($variant['id'])) {
                 ProductVariant::where('id', $variant['id'])->update($variant);
             } else {
                 $product->variants()->create($variant);

@@ -13,7 +13,7 @@ trait ApiResponseTrait
             'message' => $message,
         ];
 
-        if (!is_null($data)) {
+        if (! is_null($data)) {
             $response['data'] = $data;
         }
 
@@ -27,7 +27,7 @@ trait ApiResponseTrait
             'message' => $message,
         ];
 
-        if (!is_null($errors)) {
+        if (! is_null($errors)) {
             $response['errors'] = $errors;
         }
 

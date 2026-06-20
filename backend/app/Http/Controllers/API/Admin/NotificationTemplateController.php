@@ -13,9 +13,9 @@ class NotificationTemplateController extends Controller
 
     public function index(Request $request)
     {
-        $templates = NotificationTemplate::when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->when($request->type, fn($q, $t) => $q->where('type', $t))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+        $templates = NotificationTemplate::when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->type, fn ($q, $t) => $q->where('type', $t))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('name')
             ->get();
 
@@ -41,7 +41,9 @@ class NotificationTemplateController extends Controller
     public function show($id)
     {
         $template = NotificationTemplate::find($id);
-        if (!$template) return $this->notFound('Notification template not found');
+        if (! $template) {
+            return $this->notFound('Notification template not found');
+        }
 
         return $this->success('Notification template retrieved', ['template' => $template]);
     }
@@ -49,7 +51,9 @@ class NotificationTemplateController extends Controller
     public function update(Request $request, $id)
     {
         $template = NotificationTemplate::find($id);
-        if (!$template) return $this->notFound('Notification template not found');
+        if (! $template) {
+            return $this->notFound('Notification template not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -68,9 +72,12 @@ class NotificationTemplateController extends Controller
     public function destroy($id)
     {
         $template = NotificationTemplate::find($id);
-        if (!$template) return $this->notFound('Notification template not found');
+        if (! $template) {
+            return $this->notFound('Notification template not found');
+        }
 
         $template->delete();
+
         return $this->success('Notification template deleted');
     }
 }

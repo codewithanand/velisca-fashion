@@ -14,8 +14,8 @@ class ReviewStatusController extends Controller
 
     public function index(Request $request)
     {
-        $statuses = ReviewStatus::when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+        $statuses = ReviewStatus::when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('name')
             ->get();
 
@@ -40,16 +40,18 @@ class ReviewStatusController extends Controller
     public function update(Request $request, $id)
     {
         $status = ReviewStatus::find($id);
-        if (!$status) return $this->notFound('Review status not found');
+        if (! $status) {
+            return $this->notFound('Review status not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:review_statuses,slug,' . $id,
+            'slug' => 'sometimes|string|max:255|unique:review_statuses,slug,'.$id,
             'color' => 'nullable|string|max:20',
             'status' => 'nullable|boolean',
         ]);
 
-        if (isset($validated['name']) && !isset($validated['slug'])) {
+        if (isset($validated['name']) && ! isset($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['name']);
         }
 
@@ -61,9 +63,12 @@ class ReviewStatusController extends Controller
     public function destroy($id)
     {
         $status = ReviewStatus::find($id);
-        if (!$status) return $this->notFound('Review status not found');
+        if (! $status) {
+            return $this->notFound('Review status not found');
+        }
 
         $status->delete();
+
         return $this->success('Review status deleted');
     }
 }

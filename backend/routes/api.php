@@ -1,26 +1,35 @@
 <?php
 
+use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\Admin\ActivityLogController;
+use App\Http\Controllers\API\Admin\AdminOrderController;
 use App\Http\Controllers\API\Admin\AnalyticsController;
+use App\Http\Controllers\API\Admin\AnnouncementBarController;
 use App\Http\Controllers\API\Admin\AttributeController;
 use App\Http\Controllers\API\Admin\AttributeValueController;
 use App\Http\Controllers\API\Admin\BannerController;
+use App\Http\Controllers\API\Admin\BlogCategoryController;
+use App\Http\Controllers\API\Admin\BlogController;
 use App\Http\Controllers\API\Admin\BrandController;
+use App\Http\Controllers\API\Admin\CampaignController;
 use App\Http\Controllers\API\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\API\Admin\CmsPageController;
 use App\Http\Controllers\API\Admin\CollectionController;
 use App\Http\Controllers\API\Admin\ColorController;
 use App\Http\Controllers\API\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\API\Admin\CourierController;
 use App\Http\Controllers\API\Admin\DashboardController;
+use App\Http\Controllers\API\Admin\HomepageBuilderController;
 use App\Http\Controllers\API\Admin\InventoryLogController;
 use App\Http\Controllers\API\Admin\LocationController;
 use App\Http\Controllers\API\Admin\MediaController;
+use App\Http\Controllers\API\Admin\NewsletterController;
 use App\Http\Controllers\API\Admin\NotificationController;
 use App\Http\Controllers\API\Admin\NotificationTemplateController;
-use App\Http\Controllers\API\Admin\AdminOrderController;
 use App\Http\Controllers\API\Admin\OrderStatusController;
 use App\Http\Controllers\API\Admin\PaymentMethodController;
 use App\Http\Controllers\API\Admin\PermissionController;
+use App\Http\Controllers\API\Admin\PopupCampaignController;
 use App\Http\Controllers\API\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\API\Admin\ReviewController;
 use App\Http\Controllers\API\Admin\ReviewStatusController;
@@ -36,14 +45,18 @@ use App\Http\Controllers\API\Admin\WarehouseController;
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Auth\PasswordController;
 use App\Http\Controllers\API\Auth\RefreshTokenController;
-use App\Http\Controllers\API\Public\CategoryController as PublicCategoryController;
-use App\Http\Controllers\API\Public\ProductController as PublicProductController;
-use App\Http\Controllers\API\WishlistController;
 use App\Http\Controllers\API\CartController;
-use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\CheckoutController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\PaymentController;
+use App\Http\Controllers\API\Public\CategoryController as PublicCategoryController;
+use App\Http\Controllers\API\Public\CmsController as PublicCmsController;
+use App\Http\Controllers\API\Public\NewsletterController as PublicNewsletterController;
+use App\Http\Controllers\API\Public\ProductController as PublicProductController;
+use App\Http\Controllers\API\Public\PublicBlogController;
+use App\Http\Controllers\API\Public\PublicHomepageController;
+use App\Http\Controllers\API\WishlistController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -95,6 +108,29 @@ Route::prefix('public')->group(function () {
     Route::get('/products/search', [PublicProductController::class, 'search']);
     Route::get('/products/{slug}', [PublicProductController::class, 'show']);
 
+    // Public CMS
+    Route::get('/cms/pages', [PublicCmsController::class, 'pages']);
+    Route::get('/cms/pages/{slug}', [PublicCmsController::class, 'show']);
+
+    // Public Homepage
+    Route::get('/homepage', [PublicHomepageController::class, 'index']);
+    Route::get('/homepage/sections', [PublicHomepageController::class, 'sections']);
+    Route::get('/homepage/banners', [PublicHomepageController::class, 'banners']);
+
+    // Public Blogs
+    Route::get('/blogs', [PublicBlogController::class, 'index']);
+    Route::get('/blogs/featured', [PublicBlogController::class, 'featured']);
+    Route::get('/blogs/categories', [PublicBlogController::class, 'categories']);
+    Route::get('/blogs/{slug}', [PublicBlogController::class, 'show']);
+
+    // Public Announcements & Popups
+    Route::get('/announcements', [PublicCmsController::class, 'announcements']);
+    Route::get('/popups', [PublicCmsController::class, 'popups']);
+
+    // Public Newsletter
+    Route::post('/newsletter/subscribe', [PublicNewsletterController::class, 'subscribe']);
+    Route::post('/newsletter/unsubscribe', [PublicNewsletterController::class, 'unsubscribe']);
+
 });
 
 /*
@@ -102,9 +138,9 @@ Route::prefix('public')->group(function () {
 | Admin Routes (requires sanctum auth + admin/staff role)
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->middleware(['auth:sanctum', 'role:' . implode(',', [
-    \App\Models\User::ROLE_ADMIN,
-    \App\Models\User::ROLE_STAFF,
+Route::prefix('admin')->middleware(['auth:sanctum', 'role:'.implode(',', [
+    User::ROLE_ADMIN,
+    User::ROLE_STAFF,
 ])])->group(function () {
 
     // Admin auth
@@ -355,6 +391,70 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:' . implode(',', [
     // Activity Logs
     Route::get('/activity-logs', [ActivityLogController::class, 'index']);
     Route::delete('/activity-logs/clear', [ActivityLogController::class, 'clear']);
+
+    // CMS Pages
+    Route::get('/cms-pages', [CmsPageController::class, 'index']);
+    Route::get('/cms-pages/{id}', [CmsPageController::class, 'show']);
+    Route::post('/cms-pages', [CmsPageController::class, 'store']);
+    Route::put('/cms-pages/{id}', [CmsPageController::class, 'update']);
+    Route::delete('/cms-pages/{id}', [CmsPageController::class, 'destroy']);
+
+    // Homepage Builder
+    Route::get('/homepage/layout', [HomepageBuilderController::class, 'layout']);
+    Route::get('/homepage/layouts', [HomepageBuilderController::class, 'layouts']);
+    Route::post('/homepage/layouts', [HomepageBuilderController::class, 'storeLayout']);
+    Route::put('/homepage/layouts/{id}', [HomepageBuilderController::class, 'updateLayout']);
+    Route::delete('/homepage/layouts/{id}', [HomepageBuilderController::class, 'deleteLayout']);
+    Route::get('/homepage/sections', [HomepageBuilderController::class, 'sections']);
+    Route::post('/homepage/sections', [HomepageBuilderController::class, 'storeSection']);
+    Route::put('/homepage/sections/{id}', [HomepageBuilderController::class, 'updateSection']);
+    Route::delete('/homepage/sections/{id}', [HomepageBuilderController::class, 'deleteSection']);
+    Route::post('/homepage/sections/reorder', [HomepageBuilderController::class, 'reorderSections']);
+    Route::post('/homepage/section-items', [HomepageBuilderController::class, 'storeSectionItem']);
+    Route::put('/homepage/section-items/{id}', [HomepageBuilderController::class, 'updateSectionItem']);
+    Route::delete('/homepage/section-items/{id}', [HomepageBuilderController::class, 'deleteSectionItem']);
+
+    // Blog Categories
+    Route::get('/blog-categories', [BlogCategoryController::class, 'index']);
+    Route::get('/blog-categories/{id}', [BlogCategoryController::class, 'show']);
+    Route::post('/blog-categories', [BlogCategoryController::class, 'store']);
+    Route::put('/blog-categories/{id}', [BlogCategoryController::class, 'update']);
+    Route::delete('/blog-categories/{id}', [BlogCategoryController::class, 'destroy']);
+
+    // Blogs
+    Route::get('/blogs', [BlogController::class, 'index']);
+    Route::get('/blogs/{id}', [BlogController::class, 'show']);
+    Route::post('/blogs', [BlogController::class, 'store']);
+    Route::put('/blogs/{id}', [BlogController::class, 'update']);
+    Route::delete('/blogs/{id}', [BlogController::class, 'destroy']);
+
+    // Announcement Bars
+    Route::get('/announcements', [AnnouncementBarController::class, 'index']);
+    Route::get('/announcements/{id}', [AnnouncementBarController::class, 'show']);
+    Route::post('/announcements', [AnnouncementBarController::class, 'store']);
+    Route::put('/announcements/{id}', [AnnouncementBarController::class, 'update']);
+    Route::delete('/announcements/{id}', [AnnouncementBarController::class, 'destroy']);
+
+    // Popup Campaigns
+    Route::get('/popups', [PopupCampaignController::class, 'index']);
+    Route::get('/popups/{id}', [PopupCampaignController::class, 'show']);
+    Route::post('/popups', [PopupCampaignController::class, 'store']);
+    Route::put('/popups/{id}', [PopupCampaignController::class, 'update']);
+    Route::delete('/popups/{id}', [PopupCampaignController::class, 'destroy']);
+
+    // Newsletter Subscribers
+    Route::get('/newsletters', [NewsletterController::class, 'index']);
+    Route::post('/newsletters', [NewsletterController::class, 'store']);
+    Route::put('/newsletters/{id}', [NewsletterController::class, 'update']);
+    Route::delete('/newsletters/{id}', [NewsletterController::class, 'destroy']);
+    Route::get('/newsletters/export', [NewsletterController::class, 'export']);
+
+    // Campaigns
+    Route::get('/campaigns', [CampaignController::class, 'index']);
+    Route::get('/campaigns/{id}', [CampaignController::class, 'show']);
+    Route::post('/campaigns', [CampaignController::class, 'store']);
+    Route::put('/campaigns/{id}', [CampaignController::class, 'update']);
+    Route::delete('/campaigns/{id}', [CampaignController::class, 'destroy']);
 
 });
 

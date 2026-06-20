@@ -7,6 +7,7 @@ use App\Http\Resources\ReviewResource;
 use App\Models\Review;
 use App\Services\ReviewService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
@@ -36,7 +37,7 @@ class ReviewController extends Controller
     {
         try {
             $review = Review::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Review not found');
         }
 
@@ -51,7 +52,7 @@ class ReviewController extends Controller
     {
         try {
             $review = Review::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Review not found');
         }
 
@@ -66,7 +67,7 @@ class ReviewController extends Controller
     {
         try {
             $review = Review::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Review not found');
         }
 

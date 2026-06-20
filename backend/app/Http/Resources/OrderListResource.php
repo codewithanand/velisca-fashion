@@ -19,7 +19,7 @@ class OrderListResource extends JsonResource
             'items_count' => $this->items_count ?? $this->items->count(),
             'placed_at' => $this->placed_at,
             'created_at' => $this->created_at,
-            'user' => $this->whenLoaded('user', fn() => [
+            'user' => $this->whenLoaded('user', fn () => [
                 'name' => $this->user->name,
             ]),
         ];

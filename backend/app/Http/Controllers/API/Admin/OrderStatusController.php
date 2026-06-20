@@ -14,8 +14,8 @@ class OrderStatusController extends Controller
 
     public function index(Request $request)
     {
-        $statuses = OrderStatus::when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+        $statuses = OrderStatus::when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('sort_order')
             ->get();
 
@@ -42,7 +42,9 @@ class OrderStatusController extends Controller
     public function show($id)
     {
         $status = OrderStatus::find($id);
-        if (!$status) return $this->notFound('Order status not found');
+        if (! $status) {
+            return $this->notFound('Order status not found');
+        }
 
         return $this->success('Order status retrieved', ['order_status' => $status]);
     }
@@ -50,18 +52,20 @@ class OrderStatusController extends Controller
     public function update(Request $request, $id)
     {
         $status = OrderStatus::find($id);
-        if (!$status) return $this->notFound('Order status not found');
+        if (! $status) {
+            return $this->notFound('Order status not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:order_statuses,slug,' . $id,
+            'slug' => 'sometimes|string|max:255|unique:order_statuses,slug,'.$id,
             'color' => 'nullable|string|max:20',
             'sort_order' => 'nullable|integer|min:0',
             'is_final' => 'nullable|boolean',
             'status' => 'nullable|boolean',
         ]);
 
-        if (isset($validated['name']) && !isset($validated['slug'])) {
+        if (isset($validated['name']) && ! isset($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['name']);
         }
 
@@ -73,9 +77,12 @@ class OrderStatusController extends Controller
     public function destroy($id)
     {
         $status = OrderStatus::find($id);
-        if (!$status) return $this->notFound('Order status not found');
+        if (! $status) {
+            return $this->notFound('Order status not found');
+        }
 
         $status->delete();
+
         return $this->success('Order status deleted');
     }
 }

@@ -13,8 +13,8 @@ class WarehouseController extends Controller
 
     public function index(Request $request)
     {
-        $warehouses = Warehouse::when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+        $warehouses = Warehouse::when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('name')
             ->get();
 
@@ -38,7 +38,9 @@ class WarehouseController extends Controller
     public function show($id)
     {
         $warehouse = Warehouse::find($id);
-        if (!$warehouse) return $this->notFound('Warehouse not found');
+        if (! $warehouse) {
+            return $this->notFound('Warehouse not found');
+        }
 
         return $this->success('Warehouse retrieved', ['warehouse' => $warehouse]);
     }
@@ -46,11 +48,13 @@ class WarehouseController extends Controller
     public function update(Request $request, $id)
     {
         $warehouse = Warehouse::find($id);
-        if (!$warehouse) return $this->notFound('Warehouse not found');
+        if (! $warehouse) {
+            return $this->notFound('Warehouse not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'code' => 'sometimes|string|max:50|unique:warehouses,code,' . $id,
+            'code' => 'sometimes|string|max:50|unique:warehouses,code,'.$id,
             'location' => 'nullable|string',
             'status' => 'nullable|boolean',
         ]);
@@ -63,9 +67,12 @@ class WarehouseController extends Controller
     public function destroy($id)
     {
         $warehouse = Warehouse::find($id);
-        if (!$warehouse) return $this->notFound('Warehouse not found');
+        if (! $warehouse) {
+            return $this->notFound('Warehouse not found');
+        }
 
         $warehouse->delete();
+
         return $this->success('Warehouse deleted');
     }
 }

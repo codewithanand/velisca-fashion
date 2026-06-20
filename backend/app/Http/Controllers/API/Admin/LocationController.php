@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\City;
 use App\Models\Country;
 use App\Models\State;
-use App\Models\City;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 
@@ -18,8 +18,8 @@ class LocationController extends Controller
     public function countries(Request $request)
     {
         $countries = Country::withCount('states')
-            ->when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+            ->when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('name')
             ->get();
 
@@ -44,11 +44,13 @@ class LocationController extends Controller
     public function updateCountry(Request $request, $id)
     {
         $country = Country::find($id);
-        if (!$country) return $this->notFound('Country not found');
+        if (! $country) {
+            return $this->notFound('Country not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'iso_code' => 'sometimes|string|max:10|unique:countries,iso_code,' . $id,
+            'iso_code' => 'sometimes|string|max:10|unique:countries,iso_code,'.$id,
             'phone_code' => 'nullable|string|max:10',
             'currency' => 'nullable|string|max:10',
             'status' => 'nullable|boolean',
@@ -62,13 +64,16 @@ class LocationController extends Controller
     public function deleteCountry($id)
     {
         $country = Country::find($id);
-        if (!$country) return $this->notFound('Country not found');
+        if (! $country) {
+            return $this->notFound('Country not found');
+        }
 
         $country->states()->each(function ($state) {
             $state->cities()->delete();
         });
         $country->states()->delete();
         $country->delete();
+
         return $this->success('Country deleted');
     }
 
@@ -77,7 +82,9 @@ class LocationController extends Controller
     public function states($countryId)
     {
         $country = Country::find($countryId);
-        if (!$country) return $this->notFound('Country not found');
+        if (! $country) {
+            return $this->notFound('Country not found');
+        }
 
         $states = $country->states()->withCount('cities')->orderBy('name')->get();
 
@@ -101,7 +108,9 @@ class LocationController extends Controller
     public function updateState(Request $request, $id)
     {
         $state = State::find($id);
-        if (!$state) return $this->notFound('State not found');
+        if (! $state) {
+            return $this->notFound('State not found');
+        }
 
         $validated = $request->validate([
             'country_id' => 'sometimes|exists:countries,id',
@@ -118,10 +127,13 @@ class LocationController extends Controller
     public function deleteState($id)
     {
         $state = State::find($id);
-        if (!$state) return $this->notFound('State not found');
+        if (! $state) {
+            return $this->notFound('State not found');
+        }
 
         $state->cities()->delete();
         $state->delete();
+
         return $this->success('State deleted');
     }
 
@@ -130,7 +142,9 @@ class LocationController extends Controller
     public function cities($stateId)
     {
         $state = State::find($stateId);
-        if (!$state) return $this->notFound('State not found');
+        if (! $state) {
+            return $this->notFound('State not found');
+        }
 
         $cities = $state->cities()->orderBy('name')->get();
 
@@ -153,7 +167,9 @@ class LocationController extends Controller
     public function updateCity(Request $request, $id)
     {
         $city = City::find($id);
-        if (!$city) return $this->notFound('City not found');
+        if (! $city) {
+            return $this->notFound('City not found');
+        }
 
         $validated = $request->validate([
             'state_id' => 'sometimes|exists:states,id',
@@ -169,9 +185,12 @@ class LocationController extends Controller
     public function deleteCity($id)
     {
         $city = City::find($id);
-        if (!$city) return $this->notFound('City not found');
+        if (! $city) {
+            return $this->notFound('City not found');
+        }
 
         $city->delete();
+
         return $this->success('City deleted');
     }
 }

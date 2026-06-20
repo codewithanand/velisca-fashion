@@ -15,7 +15,7 @@ class TagController extends Controller
     public function index(Request $request)
     {
         $tags = Tag::withCount('products')
-            ->when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
             ->orderBy('name')
             ->get();
 
@@ -38,8 +38,11 @@ class TagController extends Controller
     public function destroy($id)
     {
         $tag = Tag::find($id);
-        if (!$tag) return $this->notFound('Tag not found');
+        if (! $tag) {
+            return $this->notFound('Tag not found');
+        }
         $tag->delete();
+
         return $this->success('Tag deleted');
     }
 }

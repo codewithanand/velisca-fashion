@@ -25,7 +25,7 @@ class DashboardController extends Controller
 
         $recentProducts = Product::with('primaryImage')
             ->orderBy('created_at', 'desc')->limit(5)->get()
-            ->map(fn($p) => [
+            ->map(fn ($p) => [
                 'id' => $p->id,
                 'name' => $p->name,
                 'price' => $p->price,

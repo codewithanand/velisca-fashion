@@ -35,7 +35,7 @@ class CategoryService
     public function getTree()
     {
         return Category::withCount('products')
-            ->with(['children' => fn($q) => $q->withCount('products')->orderBy('sort_order')->orderBy('name')])
+            ->with(['children' => fn ($q) => $q->withCount('products')->orderBy('sort_order')->orderBy('name')])
             ->whereNull('parent_id')
             ->orderBy('sort_order')
             ->orderBy('name')
@@ -45,14 +45,14 @@ class CategoryService
     public function getById($id)
     {
         return Category::withCount('products')
-            ->with(['parent', 'children' => fn($q) => $q->withCount('products')])
+            ->with(['parent', 'children' => fn ($q) => $q->withCount('products')])
             ->findOrFail($id);
     }
 
     public function getBySlug($slug)
     {
         return Category::withCount('products')
-            ->with(['children' => fn($q) => $q->withCount('products')])
+            ->with(['children' => fn ($q) => $q->withCount('products')])
             ->where('slug', $slug)
             ->firstOrFail();
     }
@@ -60,15 +60,17 @@ class CategoryService
     public function create(array $data): Category
     {
         $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
+
         return Category::create($data);
     }
 
     public function update(Category $category, array $data): Category
     {
-        if (isset($data['name']) && !isset($data['slug'])) {
+        if (isset($data['name']) && ! isset($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
         }
         $category->update($data);
+
         return $category->loadCount('products');
     }
 

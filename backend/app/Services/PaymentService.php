@@ -20,9 +20,9 @@ class PaymentService
             $payment = Payment::updateOrCreate(
                 ['order_id' => $order->id],
                 [
-                    'payment_method'   => $method,
-                    'amount'           => $order->grand_total,
-                    'status'           => Order::PAYMENT_PENDING,
+                    'payment_method' => $method,
+                    'amount' => $order->grand_total,
+                    'status' => Order::PAYMENT_PENDING,
                     'gateway_response' => $gatewayResponse ? (array) $gatewayResponse : null,
                 ]
             );
@@ -35,9 +35,9 @@ class PaymentService
     {
         return DB::transaction(function () use ($order, $transactionId) {
             $order->payment()->update([
-                'status'         => Order::PAYMENT_PAID,
+                'status' => Order::PAYMENT_PAID,
                 'transaction_id' => $transactionId,
-                'paid_at'        => now(),
+                'paid_at' => now(),
             ]);
 
             $previousStatus = $order->order_status;
@@ -53,11 +53,11 @@ class PaymentService
                 ]);
 
                 OrderStatusHistory::create([
-                    'order_id'    => $order->id,
+                    'order_id' => $order->id,
                     'from_status' => $previousStatus,
-                    'to_status'   => Order::STATUS_CONFIRMED,
-                    'changed_by'  => 'system',
-                    'notes'       => 'Payment received. Order confirmed.',
+                    'to_status' => Order::STATUS_CONFIRMED,
+                    'changed_by' => 'system',
+                    'notes' => 'Payment received. Order confirmed.',
                 ]);
             }
 
@@ -74,15 +74,15 @@ class PaymentService
 
             $order->update([
                 'payment_status' => Order::PAYMENT_FAILED,
-                'order_status'   => Order::STATUS_FAILED,
+                'order_status' => Order::STATUS_FAILED,
             ]);
 
             OrderStatusHistory::create([
-                'order_id'    => $order->id,
+                'order_id' => $order->id,
                 'from_status' => $order->order_status,
-                'to_status'   => Order::STATUS_FAILED,
-                'changed_by'  => 'system',
-                'notes'       => 'Payment failed.',
+                'to_status' => Order::STATUS_FAILED,
+                'changed_by' => 'system',
+                'notes' => 'Payment failed.',
             ]);
 
             return $order->fresh()->load('payment', 'statusHistories');
@@ -98,7 +98,7 @@ class PaymentService
 
             $order->update([
                 'payment_status' => Order::PAYMENT_REFUNDED,
-                'order_status'   => Order::STATUS_REFUNDED,
+                'order_status' => Order::STATUS_REFUNDED,
             ]);
 
             $order->loadMissing('items');
@@ -111,11 +111,11 @@ class PaymentService
             }
 
             OrderStatusHistory::create([
-                'order_id'    => $order->id,
+                'order_id' => $order->id,
                 'from_status' => $order->order_status,
-                'to_status'   => Order::STATUS_REFUNDED,
-                'changed_by'  => 'system',
-                'notes'       => 'Payment refunded.',
+                'to_status' => Order::STATUS_REFUNDED,
+                'changed_by' => 'system',
+                'notes' => 'Payment refunded.',
             ]);
 
             return $order->fresh()->load('payment', 'statusHistories');

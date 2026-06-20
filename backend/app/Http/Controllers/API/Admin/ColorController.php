@@ -39,11 +39,13 @@ class ColorController extends Controller
     public function update(Request $request, $id)
     {
         $color = Color::find($id);
-        if (!$color) return $this->notFound('Color not found');
+        if (! $color) {
+            return $this->notFound('Color not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:colors,slug,' . $id,
+            'slug' => 'sometimes|string|max:255|unique:colors,slug,'.$id,
             'hex_code' => 'nullable|string|max:7',
             'color_family' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer|min:0',
@@ -58,8 +60,11 @@ class ColorController extends Controller
     public function destroy($id)
     {
         $color = Color::find($id);
-        if (!$color) return $this->notFound('Color not found');
+        if (! $color) {
+            return $this->notFound('Color not found');
+        }
         $color->delete();
+
         return $this->success('Color deleted');
     }
 }

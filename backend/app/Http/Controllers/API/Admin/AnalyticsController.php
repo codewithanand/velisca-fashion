@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
-use App\Models\Category;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 
@@ -24,7 +24,7 @@ class AnalyticsController extends Controller
             ->orderByDesc('products_count')
             ->limit(10)
             ->get()
-            ->map(fn($c) => [
+            ->map(fn ($c) => [
                 'name' => $c->name,
                 'count' => $c->products_count,
             ]);
@@ -33,7 +33,7 @@ class AnalyticsController extends Controller
             ->where('is_trending', true)
             ->where('status', 'published')
             ->limit(5)->get()
-            ->map(fn($p) => [
+            ->map(fn ($p) => [
                 'id' => $p->id,
                 'name' => $p->name,
                 'price' => $p->price,

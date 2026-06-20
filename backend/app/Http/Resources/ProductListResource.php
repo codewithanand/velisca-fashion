@@ -30,12 +30,12 @@ class ProductListResource extends JsonResource
             'is_best_seller' => $this->is_best_seller,
             'average_rating' => $this->average_rating,
             'reviews_count' => $this->reviews_count,
-            'category' => $this->whenLoaded('category', fn() => [
+            'category' => $this->whenLoaded('category', fn () => [
                 'id' => $this->category->id,
                 'name' => $this->category->name,
                 'slug' => $this->category->slug,
             ]),
-            'primary_image' => $this->whenLoaded('primaryImage', fn() => [
+            'primary_image' => $this->whenLoaded('primaryImage', fn () => [
                 'id' => $this->primaryImage->id,
                 'image' => $this->primaryImage->image,
             ]),

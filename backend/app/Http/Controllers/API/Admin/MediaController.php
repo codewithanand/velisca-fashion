@@ -17,9 +17,9 @@ class MediaController extends Controller
     public function index(Request $request)
     {
         $items = Media::with('folder')
-            ->when($request->folder_id, fn($q, $v) => $q->where('folder_id', $v))
-            ->when($request->file_type, fn($q, $t) => $q->where('file_type', $t))
-            ->when($request->search, fn($q, $s) => $q->where('file_name', 'like', "%{$s}%"))
+            ->when($request->folder_id, fn ($q, $v) => $q->where('folder_id', $v))
+            ->when($request->file_type, fn ($q, $t) => $q->where('file_type', $t))
+            ->when($request->search, fn ($q, $s) => $q->where('file_name', 'like', "%{$s}%"))
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 50);
 
@@ -47,7 +47,9 @@ class MediaController extends Controller
     public function update(Request $request, $id)
     {
         $media = Media::find($id);
-        if (!$media) return $this->notFound('Media item not found');
+        if (! $media) {
+            return $this->notFound('Media item not found');
+        }
 
         $validated = $request->validate([
             'folder_id' => 'nullable|exists:media_folders,id',
@@ -63,9 +65,12 @@ class MediaController extends Controller
     public function destroy($id)
     {
         $media = Media::find($id);
-        if (!$media) return $this->notFound('Media item not found');
+        if (! $media) {
+            return $this->notFound('Media item not found');
+        }
 
         $media->delete();
+
         return $this->success('Media item deleted');
     }
 
@@ -75,7 +80,7 @@ class MediaController extends Controller
     {
         $folders = MediaFolder::withCount('media')
             ->with('children')
-            ->when($request->parent_id !== null, fn($q, $v) => $q->where('parent_id', $v), fn($q) => $q->whereNull('parent_id'))
+            ->when($request->parent_id !== null, fn ($q, $v) => $q->where('parent_id', $v), fn ($q) => $q->whereNull('parent_id'))
             ->orderBy('name')
             ->get();
 
@@ -97,7 +102,9 @@ class MediaController extends Controller
     public function updateFolder(Request $request, $id)
     {
         $folder = MediaFolder::find($id);
-        if (!$folder) return $this->notFound('Media folder not found');
+        if (! $folder) {
+            return $this->notFound('Media folder not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -112,7 +119,9 @@ class MediaController extends Controller
     public function deleteFolder($id)
     {
         $folder = MediaFolder::find($id);
-        if (!$folder) return $this->notFound('Media folder not found');
+        if (! $folder) {
+            return $this->notFound('Media folder not found');
+        }
 
         $folder->media()->delete();
         $folder->children()->each(function ($child) {
@@ -120,6 +129,7 @@ class MediaController extends Controller
             $child->delete();
         });
         $folder->delete();
+
         return $this->success('Media folder deleted');
     }
 }

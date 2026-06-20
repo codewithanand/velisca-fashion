@@ -43,10 +43,12 @@ class CouponController extends Controller
     public function update($id, Request $request)
     {
         $coupon = Coupon::find($id);
-        if (!$coupon) return $this->notFound('Coupon not found');
+        if (! $coupon) {
+            return $this->notFound('Coupon not found');
+        }
 
         $validated = $request->validate([
-            'code' => 'sometimes|string|max:50|unique:coupons,code,' . $id,
+            'code' => 'sometimes|string|max:50|unique:coupons,code,'.$id,
             'type' => 'sometimes|in:percentage,flat,free_shipping',
             'value' => 'sometimes|numeric|min:0',
             'minimum_amount' => 'nullable|numeric|min:0',
@@ -65,16 +67,22 @@ class CouponController extends Controller
     public function destroy($id)
     {
         $coupon = Coupon::find($id);
-        if (!$coupon) return $this->notFound('Coupon not found');
+        if (! $coupon) {
+            return $this->notFound('Coupon not found');
+        }
         $coupon->delete();
+
         return $this->success('Coupon deleted');
     }
 
     public function toggle($id)
     {
         $coupon = Coupon::find($id);
-        if (!$coupon) return $this->notFound('Coupon not found');
-        $coupon->update(['status' => !$coupon->status]);
+        if (! $coupon) {
+            return $this->notFound('Coupon not found');
+        }
+        $coupon->update(['status' => ! $coupon->status]);
+
         return $this->success('Coupon status toggled', ['coupon' => $coupon]);
     }
 }

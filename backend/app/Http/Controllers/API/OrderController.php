@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
 use App\Services\OrderService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -24,11 +24,11 @@ class OrderController extends Controller
 
         return $this->success('Orders retrieved', [
             'orders' => $orders->items(),
-            'meta'   => [
-                'total'        => $orders->total(),
-                'page'         => $orders->currentPage(),
-                'per_page'     => $orders->perPage(),
-                'last_page'    => $orders->lastPage(),
+            'meta' => [
+                'total' => $orders->total(),
+                'page' => $orders->currentPage(),
+                'per_page' => $orders->perPage(),
+                'last_page' => $orders->lastPage(),
             ],
         ]);
     }
@@ -37,7 +37,7 @@ class OrderController extends Controller
     {
         try {
             $order = $this->orderService->getOrder((int) $id, auth()->id());
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Order not found');
         }
 
@@ -55,7 +55,7 @@ class OrderController extends Controller
         try {
             $order = $this->orderService->getOrder((int) $id, auth()->id());
             $order = $this->orderService->cancelOrder($order, $validated['reason'] ?? null);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Order not found');
         } catch (\RuntimeException $e) {
             return $this->error($e->getMessage());
@@ -75,7 +75,7 @@ class OrderController extends Controller
         try {
             $order = $this->orderService->getOrder((int) $id, auth()->id());
             $order = $this->orderService->returnOrder($order, $validated['reason'] ?? null);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Order not found');
         } catch (\RuntimeException $e) {
             return $this->error($e->getMessage());
@@ -90,12 +90,12 @@ class OrderController extends Controller
     {
         try {
             $order = $this->orderService->getOrder((int) $id, auth()->id());
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Order not found');
         }
 
         return $this->success('Tracking info retrieved', [
-            'order'    => $order,
+            'order' => $order,
             'shipment' => $order->shipment,
         ]);
     }

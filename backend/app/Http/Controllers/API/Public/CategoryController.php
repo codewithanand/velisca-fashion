@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API\Public;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
+use App\Models\Category;
 use App\Services\CategoryService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -29,6 +31,7 @@ class CategoryController extends Controller
     public function tree()
     {
         $categories = $this->categoryService->getTree();
+
         return $this->success('Category tree', [
             'categories' => CategoryResource::collection($categories),
         ]);
@@ -38,17 +41,18 @@ class CategoryController extends Controller
     {
         try {
             $category = $this->categoryService->getBySlug($slug);
+
             return $this->success('Category retrieved', [
                 'category' => new CategoryResource($category),
             ]);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Category not found');
         }
     }
 
     public function featured()
     {
-        $categories = \App\Models\Category::withCount('products')
+        $categories = Category::withCount('products')
             ->active()->featured()->orderBy('sort_order')->get();
 
         return $this->success('Featured categories', [

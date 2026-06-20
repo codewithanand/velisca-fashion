@@ -20,8 +20,8 @@ class UserController extends Controller
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -74,7 +74,7 @@ class UserController extends Controller
             'avatar' => $validated['avatar'] ?? null,
         ]);
 
-        if (!empty($validated['roles'])) {
+        if (! empty($validated['roles'])) {
             $user->assignRole($validated['roles']);
         }
 
@@ -87,7 +87,7 @@ class UserController extends Controller
     {
         $user = User::with('roles', 'permissions')->find($id);
 
-        if (!$user) {
+        if (! $user) {
             return $this->notFound('User not found');
         }
 
@@ -100,13 +100,13 @@ class UserController extends Controller
     {
         $user = User::with('roles', 'permissions')->find($id);
 
-        if (!$user) {
+        if (! $user) {
             return $this->notFound('User not found');
         }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
+            'email' => 'sometimes|string|email|max:255|unique:users,email,'.$id,
             'phone' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:8',
             'role' => 'nullable|string',
@@ -118,18 +118,30 @@ class UserController extends Controller
 
         $updateData = [];
 
-        if (isset($validated['name'])) $updateData['name'] = $validated['name'];
-        if (isset($validated['email'])) $updateData['email'] = $validated['email'];
-        if (array_key_exists('phone', $validated)) $updateData['phone'] = $validated['phone'];
-        if (array_key_exists('avatar', $validated)) $updateData['avatar'] = $validated['avatar'];
-        if (isset($validated['role'])) $updateData['role'] = $validated['role'];
-        if (!empty($validated['password'])) $updateData['password'] = Hash::make($validated['password']);
+        if (isset($validated['name'])) {
+            $updateData['name'] = $validated['name'];
+        }
+        if (isset($validated['email'])) {
+            $updateData['email'] = $validated['email'];
+        }
+        if (array_key_exists('phone', $validated)) {
+            $updateData['phone'] = $validated['phone'];
+        }
+        if (array_key_exists('avatar', $validated)) {
+            $updateData['avatar'] = $validated['avatar'];
+        }
+        if (isset($validated['role'])) {
+            $updateData['role'] = $validated['role'];
+        }
+        if (! empty($validated['password'])) {
+            $updateData['password'] = Hash::make($validated['password']);
+        }
 
         if (isset($validated['status'])) {
             $updateData['role'] = $validated['status'] === 'blocked' ? 'blocked' : 'customer';
         }
 
-        if (!empty($updateData)) {
+        if (! empty($updateData)) {
             $user->update($updateData);
         }
 
@@ -146,7 +158,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return $this->notFound('User not found');
         }
 
@@ -163,7 +175,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return $this->notFound('User not found');
         }
 
@@ -188,7 +200,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return $this->notFound('User not found');
         }
 

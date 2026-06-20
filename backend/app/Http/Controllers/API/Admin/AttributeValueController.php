@@ -20,7 +20,7 @@ class AttributeValueController extends Controller
             $query->where('attribute_id', $request->attribute_id);
         }
 
-        $values = $query->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+        $values = $query->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('sort_order')
             ->get();
 
@@ -47,18 +47,20 @@ class AttributeValueController extends Controller
     public function update(Request $request, $id)
     {
         $value = AttributeValue::find($id);
-        if (!$value) return $this->notFound('Attribute value not found');
+        if (! $value) {
+            return $this->notFound('Attribute value not found');
+        }
 
         $validated = $request->validate([
             'attribute_id' => 'sometimes|exists:attributes,id',
             'value' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:attribute_values,slug,' . $id,
+            'slug' => 'sometimes|string|max:255|unique:attribute_values,slug,'.$id,
             'color_code' => 'nullable|string|max:20',
             'sort_order' => 'nullable|integer|min:0',
             'status' => 'nullable|boolean',
         ]);
 
-        if (isset($validated['value']) && !isset($validated['slug'])) {
+        if (isset($validated['value']) && ! isset($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['value']);
         }
 
@@ -70,9 +72,12 @@ class AttributeValueController extends Controller
     public function destroy($id)
     {
         $value = AttributeValue::find($id);
-        if (!$value) return $this->notFound('Attribute value not found');
+        if (! $value) {
+            return $this->notFound('Attribute value not found');
+        }
 
         $value->delete();
+
         return $this->success('Attribute value deleted');
     }
 }

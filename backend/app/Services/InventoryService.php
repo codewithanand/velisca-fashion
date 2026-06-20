@@ -12,10 +12,12 @@ class InventoryService
     {
         if ($variantId) {
             $variant = ProductVariant::findOrFail($variantId);
+
             return $variant->stock >= $quantity;
         }
 
         $product = Product::findOrFail($productId);
+
         return $product->stock >= $quantity;
     }
 
@@ -49,10 +51,12 @@ class InventoryService
     {
         if ($variantId) {
             $variant = ProductVariant::findOrFail($variantId);
+
             return (int) $variant->stock;
         }
 
         $product = Product::findOrFail($productId);
+
         return (int) $product->stock;
     }
 
@@ -61,11 +65,13 @@ class InventoryService
         if ($variantId) {
             $variant = ProductVariant::findOrFail($variantId);
             $threshold = $variant->product->low_stock_threshold ?? 5;
+
             return $variant->stock > 0 && $variant->stock <= $threshold;
         }
 
         $product = Product::findOrFail($productId);
         $threshold = $product->low_stock_threshold ?? 5;
+
         return $product->stock > 0 && $product->stock <= $threshold;
     }
 }

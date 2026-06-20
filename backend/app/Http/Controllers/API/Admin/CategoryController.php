@@ -7,6 +7,7 @@ use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Services\CategoryService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -20,6 +21,7 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $categories = $this->categoryService->list($request);
+
         return $this->success('Categories retrieved', [
             'categories' => CategoryResource::collection($categories),
         ]);
@@ -28,6 +30,7 @@ class CategoryController extends Controller
     public function tree()
     {
         $categories = $this->categoryService->getTree();
+
         return $this->success('Category tree retrieved', [
             'categories' => CategoryResource::collection($categories),
         ]);
@@ -37,10 +40,11 @@ class CategoryController extends Controller
     {
         try {
             $category = $this->categoryService->getById($id);
+
             return $this->success('Category retrieved', [
                 'category' => new CategoryResource($category),
             ]);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Category not found');
         }
     }
@@ -71,13 +75,13 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Category not found');
         }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:categories,slug,' . $id,
+            'slug' => 'sometimes|string|max:255|unique:categories,slug,'.$id,
             'parent_id' => 'nullable|exists:categories,id',
             'description' => 'nullable|string',
             'image' => 'nullable|string',
@@ -98,7 +102,7 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFound('Category not found');
         }
 

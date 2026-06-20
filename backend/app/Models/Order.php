@@ -39,19 +39,31 @@ class Order extends Model
     ];
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_CONFIRMED = 'confirmed';
+
     public const STATUS_PROCESSING = 'processing';
+
     public const STATUS_PACKED = 'packed';
+
     public const STATUS_SHIPPED = 'shipped';
+
     public const STATUS_DELIVERED = 'delivered';
+
     public const STATUS_CANCELLED = 'cancelled';
+
     public const STATUS_RETURNED = 'returned';
+
     public const STATUS_REFUNDED = 'refunded';
+
     public const STATUS_FAILED = 'failed';
 
     public const PAYMENT_PENDING = 'pending';
+
     public const PAYMENT_PAID = 'paid';
+
     public const PAYMENT_FAILED = 'failed';
+
     public const PAYMENT_REFUNDED = 'refunded';
 
     public function user(): BelongsTo
@@ -79,14 +91,45 @@ class Order extends Model
         return $this->hasMany(OrderStatusHistory::class);
     }
 
-    public function isPending(): bool { return $this->order_status === self::STATUS_PENDING; }
-    public function isConfirmed(): bool { return $this->order_status === self::STATUS_CONFIRMED; }
-    public function isProcessing(): bool { return $this->order_status === self::STATUS_PROCESSING; }
-    public function isShipped(): bool { return $this->order_status === self::STATUS_SHIPPED; }
-    public function isDelivered(): bool { return $this->order_status === self::STATUS_DELIVERED; }
-    public function isCancelled(): bool { return $this->order_status === self::STATUS_CANCELLED; }
-    public function isPaid(): bool { return $this->payment_status === self::PAYMENT_PAID; }
-    public function isRefunded(): bool { return $this->payment_status === self::PAYMENT_REFUNDED; }
+    public function isPending(): bool
+    {
+        return $this->order_status === self::STATUS_PENDING;
+    }
+
+    public function isConfirmed(): bool
+    {
+        return $this->order_status === self::STATUS_CONFIRMED;
+    }
+
+    public function isProcessing(): bool
+    {
+        return $this->order_status === self::STATUS_PROCESSING;
+    }
+
+    public function isShipped(): bool
+    {
+        return $this->order_status === self::STATUS_SHIPPED;
+    }
+
+    public function isDelivered(): bool
+    {
+        return $this->order_status === self::STATUS_DELIVERED;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->order_status === self::STATUS_CANCELLED;
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->payment_status === self::PAYMENT_PAID;
+    }
+
+    public function isRefunded(): bool
+    {
+        return $this->payment_status === self::PAYMENT_REFUNDED;
+    }
 
     public function canCancel(): bool
     {
@@ -98,6 +141,7 @@ class Order extends Model
         $prefix = 'VEL';
         $date = now()->format('Ymd');
         $random = strtoupper(substr(uniqid(), -6));
+
         return "{$prefix}-{$date}-{$random}";
     }
 }

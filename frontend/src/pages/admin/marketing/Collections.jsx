@@ -17,7 +17,7 @@ export default function AdminCollections() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const [form, setForm] = useState({ name: '', slug: '', description: '', status: true });
+  const [form, setForm] = useState({ name: '', slug: '', description: '', collection_type: 'manual', banner: '', status: true, seo_title: '', seo_description: '' });
 
   const load = async () => {
     setLoading(true);
@@ -32,13 +32,13 @@ export default function AdminCollections() {
 
   const openAdd = () => {
     setEditing(null);
-    setForm({ name: '', slug: '', description: '', status: true });
+    setForm({ name: '', slug: '', description: '', collection_type: 'manual', banner: '', status: true, seo_title: '', seo_description: '' });
     setModalOpen(true);
   };
 
   const openEdit = (col) => {
     setEditing(col);
-    setForm({ name: col.name, slug: col.slug, description: col.description || '', status: col.status ?? true });
+    setForm({ name: col.name, slug: col.slug, description: col.description || '', collection_type: col.collection_type || 'manual', banner: col.banner || '', status: col.status ?? true, seo_title: col.seo_title || '', seo_description: col.seo_description || '' });
     setModalOpen(true);
   };
 
@@ -115,10 +115,19 @@ export default function AdminCollections() {
             <AdminInput label="Collection Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Enter name" />
             <AdminInput label="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto-generated" />
           </div>
+          <AdminSelect label="Collection Type" value={form.collection_type} onChange={(e) => setForm({ ...form, collection_type: e.target.value })} options={[
+            { value: 'manual', label: 'Manual Collection' },
+            { value: 'automatic', label: 'Automatic Collection' },
+            { value: 'campaign', label: 'Campaign Collection' },
+            { value: 'seasonal', label: 'Seasonal Collection' },
+          ]} />
           <div>
             <label className="text-sm font-medium text-text-primary block mb-1.5">Description</label>
             <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Collection description..." rows={3} className="admin-input w-full resize-none" />
           </div>
+          <AdminInput label="Banner Image URL" value={form.banner} onChange={(e) => setForm({ ...form, banner: e.target.value })} placeholder="https://..." />
+          <AdminInput label="SEO Title" value={form.seo_title} onChange={(e) => setForm({ ...form, seo_title: e.target.value })} placeholder="SEO title" />
+          <AdminInput label="SEO Description" value={form.seo_description} onChange={(e) => setForm({ ...form, seo_description: e.target.value })} placeholder="SEO description" />
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.status} onChange={(e) => setForm({ ...form, status: e.target.checked })} className="accent-primary w-4 h-4" />
             <span className="text-sm text-text-primary">Active</span>

@@ -30,7 +30,7 @@ class CheckoutController extends Controller
         }
 
         return $this->success('Checkout summary retrieved', [
-            'cart'    => $cart->load('activeItems.product.primaryImage', 'activeItems.variant.color', 'activeItems.variant.size'),
+            'cart' => $cart->load('activeItems.product.primaryImage', 'activeItems.variant.color', 'activeItems.variant.size'),
             'summary' => $summary,
         ]);
     }
@@ -38,9 +38,9 @@ class CheckoutController extends Controller
     public function placeOrder(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'address_id'     => 'required|exists:addresses,id',
+            'address_id' => 'required|exists:addresses,id',
             'payment_method' => 'required|string|in:cod,razorpay,stripe,upi,card',
-            'notes'          => 'nullable|string|max:1000',
+            'notes' => 'nullable|string|max:1000',
         ]);
 
         $cart = $this->getCart($request);

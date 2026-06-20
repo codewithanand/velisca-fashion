@@ -43,12 +43,14 @@ class ReviewService
     public function approve(Review $review): Review
     {
         $review->update(['status' => 'approved']);
+
         return $review;
     }
 
     public function reject(Review $review): Review
     {
         $review->update(['status' => 'rejected']);
+
         return $review;
     }
 

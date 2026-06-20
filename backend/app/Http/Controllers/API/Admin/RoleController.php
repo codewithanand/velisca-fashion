@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
@@ -23,6 +22,7 @@ class RoleController extends Controller
 
         $roles->getCollection()->transform(function ($role) {
             $role->users_count = $role->users()->count();
+
             return $role;
         });
 
@@ -40,6 +40,7 @@ class RoleController extends Controller
     public function all()
     {
         $roles = Role::with('permissions')->orderBy('name')->get();
+
         return $this->success('All roles retrieved', ['roles' => $roles]);
     }
 
@@ -54,7 +55,7 @@ class RoleController extends Controller
 
         $role = Role::create(['name' => $validated['name'], 'guard_name' => 'web']);
 
-        if (!empty($validated['permissions'])) {
+        if (! empty($validated['permissions'])) {
             $role->syncPermissions($validated['permissions']);
         }
 
@@ -67,7 +68,7 @@ class RoleController extends Controller
     {
         $role = Role::with('permissions')->find($id);
 
-        if (!$role) {
+        if (! $role) {
             return $this->notFound('Role not found');
         }
 
@@ -80,12 +81,12 @@ class RoleController extends Controller
     {
         $role = Role::find($id);
 
-        if (!$role) {
+        if (! $role) {
             return $this->notFound('Role not found');
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name,' . $id,
+            'name' => 'required|string|max:255|unique:roles,name,'.$id,
             'description' => 'nullable|string',
             'permissions' => 'nullable|array',
             'permissions.*' => 'string|exists:permissions,name',
@@ -106,7 +107,7 @@ class RoleController extends Controller
     {
         $role = Role::find($id);
 
-        if (!$role) {
+        if (! $role) {
             return $this->notFound('Role not found');
         }
 

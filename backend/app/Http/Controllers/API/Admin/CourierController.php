@@ -13,8 +13,8 @@ class CourierController extends Controller
 
     public function index(Request $request)
     {
-        $couriers = Courier::when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->when($request->status !== null, fn($q) => $q->where('status', $request->status))
+        $couriers = Courier::when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($request->status !== null, fn ($q) => $q->where('status', $request->status))
             ->orderBy('name')
             ->get();
 
@@ -38,7 +38,9 @@ class CourierController extends Controller
     public function update(Request $request, $id)
     {
         $courier = Courier::find($id);
-        if (!$courier) return $this->notFound('Courier not found');
+        if (! $courier) {
+            return $this->notFound('Courier not found');
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -55,9 +57,12 @@ class CourierController extends Controller
     public function destroy($id)
     {
         $courier = Courier::find($id);
-        if (!$courier) return $this->notFound('Courier not found');
+        if (! $courier) {
+            return $this->notFound('Courier not found');
+        }
 
         $courier->delete();
+
         return $this->success('Courier deleted');
     }
 }
