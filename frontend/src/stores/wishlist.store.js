@@ -9,7 +9,7 @@ const useWishlistStore = create((set, get) => ({
     set({ loading: true });
     try {
       const res = await wishlistService.getAll();
-      set({ items: res.data?.wishlist_items || [], loading: false });
+      set({ items: res.data?.items || [], loading: false });
     } catch {
       set({ loading: false });
     }

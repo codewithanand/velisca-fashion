@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { X, TrendingUp, Clock } from "lucide-react";
@@ -6,7 +6,7 @@ import SearchBar from "../../components/ui/SearchBar";
 import ProductCard from "../../components/ui/ProductCard";
 import EmptyState from "../../components/ui/EmptyState";
 import { useAppContext } from "../../context/AppContext";
-import { products } from "../../data/products";
+import productService from "../../services/productService";
 
 const trendingSearches = [
   "Floral Kurtis",
@@ -27,6 +27,12 @@ const categoryMap = {
   Accessories: "accessories",
 };
 
+const PLACEHOLDER = 'https://placehold.co/400x600/E2E8F0/94A3B8?text=Product';
+const apiImg = (p) => p?.thumbnail || p?.primary_image?.image || PLACEHOLDER;
+const apiPrice = (p) => p?.display_price ?? p?.price ?? 0;
+const apiRating = (p) => p?.average_rating ?? 0;
+const apiDiscount = (p) => p?.discount_percent ?? (p?.has_sale ? Math.round((1 - p.sale_price / p.price) * 100) : 0);
+
 export default function SearchScreen() {
   const navigate = useNavigate();
   const { wishlist, toggleWishlist } = useAppContext();
@@ -36,15 +42,24 @@ export default function SearchScreen() {
     "Anarkali",
   ]);
   const [activeFilter, setActiveFilter] = useState("All");
+  const [allProducts, setAllProducts] = useState([]);
 
-  const filtered = products.filter((p) => {
+  useEffect(() => {
+    productService.getAll({ limit: 100 }).then((res) => {
+      const list = Array.isArray(res?.data?.products) ? res.data.products : Array.isArray(res?.data) ? res.data : [];
+      setAllProducts(list);
+    }).catch(() => {});
+  }, []);
+
+  const filtered = allProducts.filter((p) => {
+    const catName = p.category?.name || p.category || '';
     const matchesSearch =
       !searchTerm ||
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.category.toLowerCase().includes(searchTerm.toLowerCase());
+      catName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter =
       !categoryMap[activeFilter] ||
-      p.category === categoryMap[activeFilter];
+      catName.toLowerCase() === categoryMap[activeFilter].toLowerCase();
     return matchesSearch && matchesFilter;
   });
 
@@ -152,14 +167,14 @@ export default function SearchScreen() {
               transition={{ delay: index * 0.05 }}
             >
               <ProductCard
-                image={product.image}
+                image={apiImg(product)}
                 name={product.name}
-                price={product.price}
-                rating={product.rating}
-                discount={product.discount}
+                price={apiPrice(product)}
+                rating={apiRating(product)}
+                discount={apiDiscount(product)}
                 isWishlisted={wishlist?.includes(product.id)}
                 onToggleWishlist={() => toggleWishlist?.(product.id)}
-                onClick={() => navigate(`/product/${product.id}`)}
+                onClick={() => navigate(`/product/${product.slug || product.id}`)}
               />
             </motion.div>
           ))}

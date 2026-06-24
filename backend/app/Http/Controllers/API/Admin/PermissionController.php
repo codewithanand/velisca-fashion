@@ -41,7 +41,7 @@ class PermissionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:permissions,name',
-            'guard_name' => 'nullable|string|default:web',
+            'guard_name' => 'nullable|string',
         ]);
 
         $permission = Permission::create([

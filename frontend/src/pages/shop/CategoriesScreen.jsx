@@ -1,10 +1,23 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import CategoryCard from "../../components/ui/CategoryCard";
-import { categories } from "../../data/categories";
+import productService from "../../services/productService";
+import Loader from "../../components/ui/Loader";
 
 export default function CategoriesScreen() {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    productService.categories.getAll().then((res) => {
+      const list = Array.isArray(res) ? res : res?.data?.categories || res?.data || [];
+      setCategories(list);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="min-h-screen bg-gradient-to-b from-secondary to-background flex items-center justify-center"><Loader /></div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary to-background"><div className="px-5 py-4 max-w-md mx-auto w-full">
@@ -19,10 +32,10 @@ export default function CategoriesScreen() {
             whileTap={{ scale: 0.95 }}
           >
             <CategoryCard
-              image={category.image}
+              image={category.image || category.banner}
               name={category.name}
               onClick={() =>
-                navigate(`/products/${category.name.toLowerCase()}`)
+                navigate(`/products/${category.slug || category.name.toLowerCase()}`)
               }
             />
           </motion.div>

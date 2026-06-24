@@ -6,8 +6,7 @@ import ProductCard from "../../components/ui/ProductCard";
 import SectionTitle from "../../components/ui/SectionTitle";
 import Button from "../../components/ui/Button";
 import { useAppContext } from "../../context/AppContext";
-import { products } from "../../data/products";
-import { banners } from "../../data/banners";
+import productService from "../../services/productService";
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -20,20 +19,60 @@ export default function HomeScreen() {
   const navigate = useNavigate();
   const { user, wishlist, toggleWishlist } = useAppContext();
   const [currentBanner, setCurrentBanner] = useState(0);
+  const [banners, setBanners] = useState([]);
+  const [trendingProducts, setTrendingProducts] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
+  const [resinArtProducts, setResinArtProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const active = banners.filter((b) => b.isActive);
-    if (active.length < 2) return;
-    const timer = setInterval(() => {
-      setCurrentBanner((prev) => (prev + 1) % active.length);
-    }, 4000);
-    return () => clearInterval(timer);
+    async function fetchData() {
+      try {
+        const [bannerRes, trendingRes, newRes, prodRes] = await Promise.all([
+          productService.banners.getAll(),
+          productService.getTrending(),
+          productService.getNewArrivals(),
+          productService.getAll({ limit: 50 }),
+        ]);
+        const bannerList = Array.isArray(bannerRes)
+          ? bannerRes
+          : bannerRes?.data?.banners || bannerRes?.data || [];
+        const trendingList = Array.isArray(trendingRes)
+          ? trendingRes
+          : trendingRes?.data?.products || trendingRes?.data || [];
+        const newList = Array.isArray(newRes)
+          ? newRes
+          : newRes?.data?.products || newRes?.data || [];
+        const allProducts = Array.isArray(prodRes?.data?.products)
+          ? prodRes.data.products
+          : Array.isArray(prodRes?.data)
+          ? prodRes.data
+          : [];
+        setBanners(bannerList);
+        setTrendingProducts(trendingList);
+        setNewArrivals(newList);
+        setResinArtProducts(allProducts.filter((p) => p.category?.slug === "resin-art" || p.category?.name?.toLowerCase() === "accessories"));
+      } catch (err) {
+        console.error('Failed to load homepage data:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
   }, []);
 
-  const activeBanners = banners.filter((b) => b.isActive);
-  const trendingProducts = products.filter((p) => p.isTrending);
-  const resinArtProducts = products.filter((p) => p.category === "accessories");
-  const newArrivals = products.filter((p) => p.isNew);
+  useEffect(() => {
+    if (banners.length < 2) return;
+    const timer = setInterval(() => {
+      setCurrentBanner((prev) => (prev + 1) % banners.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [banners]);
+
+  const apiImg = (product) => product.thumbnail || product.primary_image?.image || `https://placehold.co/400x600/E2E8F0/94A3B8?text=${encodeURIComponent(product.name)}`;
+  const apiPrice = (product) => product.display_price ?? product.price ?? 0;
+  const apiRating = (product) => product.average_rating ?? 0;
+  const apiDiscount = (product) => product.discount_percent ?? (product.has_sale ? Math.round((1 - product.sale_price / product.price) * 100) : 0);
 
   const prevBanner = () =>
     setCurrentBanner((prev) =>
@@ -43,6 +82,14 @@ export default function HomeScreen() {
     setCurrentBanner((prev) =>
       prev === activeBanners.length - 1 ? 0 : prev + 1
     );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-secondary to-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary to-background"><div className="px-5 py-4 space-y-8 max-w-md mx-auto w-full">
@@ -78,6 +125,7 @@ export default function HomeScreen() {
       </div>
 
       {/* Hero Banner */}
+      {activeBanners.length > 0 && (
       <div className="relative rounded-2xl overflow-hidden h-56">
         <AnimatePresence mode="wait">
           <motion.div
@@ -89,7 +137,7 @@ export default function HomeScreen() {
             className="absolute inset-0"
           >
             <img
-              src={activeBanners[currentBanner]?.image}
+              src={activeBanners[currentBanner]?.image || activeBanners[currentBanner]?.banner}
               alt={activeBanners[currentBanner]?.title}
               className="w-full h-full object-cover"
             />
@@ -104,7 +152,7 @@ export default function HomeScreen() {
                 {activeBanners[currentBanner]?.title}
               </h2>
               <p className="text-white/80 text-sm mt-1">
-                {activeBanners[currentBanner]?.subtitle}
+                {activeBanners[currentBanner]?.subtitle || activeBanners[currentBanner]?.description}
               </p>
             </div>
           </motion.div>
@@ -135,29 +183,33 @@ export default function HomeScreen() {
           ))}
         </div>
       </div>
+      )}
 
-      {/* Trending Kurtis */}
+      {/* Trending Products */}
+      {trendingProducts.length > 0 && (
       <section>
-        <SectionTitle title="Trending Kurtis" seeAll onSeeAll={() => {}} />
+        <SectionTitle title="Trending Now" seeAll onSeeAll={() => {}} />
         <div className="flex overflow-x-auto gap-4 pb-2 -mx-5 px-5 scrollbar-none">
           {trendingProducts.map((product) => (
             <div key={product.id} className="min-w-[160px] w-[160px] flex-shrink-0">
               <ProductCard
-                image={product.image}
+                image={apiImg(product)}
                 name={product.name}
-                price={product.price}
-                rating={product.rating}
-                discount={product.discount}
+                price={apiPrice(product)}
+                rating={apiRating(product)}
+                discount={apiDiscount(product)}
                 isWishlisted={wishlist?.includes(product.id)}
                 onToggleWishlist={() => toggleWishlist?.(product.id)}
-                onClick={() => navigate(`/product/${product.id}`)}
+                onClick={() => navigate(`/product/${product.slug || product.id}`)}
               />
             </div>
           ))}
         </div>
       </section>
+      )}
 
       {/* Resin Art Collection */}
+      {resinArtProducts.length > 0 && (
       <section>
         <SectionTitle title="Resin Art Collection" seeAll onSeeAll={() => {}} />
         <div className="grid grid-cols-2 gap-4">
@@ -167,39 +219,42 @@ export default function HomeScreen() {
               className={index === 1 || index === 2 ? "row-span-2" : ""}
             >
               <ProductCard
-                image={product.image}
+                image={apiImg(product)}
                 name={product.name}
-                price={product.price}
-                rating={product.rating}
-                discount={product.discount}
+                price={apiPrice(product)}
+                rating={apiRating(product)}
+                discount={apiDiscount(product)}
                 isWishlisted={wishlist?.includes(product.id)}
                 onToggleWishlist={() => toggleWishlist?.(product.id)}
-                onClick={() => navigate(`/product/${product.id}`)}
+                onClick={() => navigate(`/product/${product.slug || product.id}`)}
               />
             </div>
           ))}
         </div>
       </section>
+      )}
 
       {/* New Arrivals */}
+      {newArrivals.length > 0 && (
       <section>
         <SectionTitle title="New Arrivals" seeAll onSeeAll={() => {}} />
         <div className="grid grid-cols-2 gap-4">
           {newArrivals.map((product) => (
             <ProductCard
               key={product.id}
-              image={product.image}
+              image={apiImg(product)}
               name={product.name}
-              price={product.price}
-              rating={product.rating}
-              discount={product.discount}
+              price={apiPrice(product)}
+              rating={apiRating(product)}
+              discount={apiDiscount(product)}
               isWishlisted={wishlist?.includes(product.id)}
               onToggleWishlist={() => toggleWishlist?.(product.id)}
-              onClick={() => navigate(`/product/${product.id}`)}
+              onClick={() => navigate(`/product/${product.slug || product.id}`)}
             />
           ))}
         </div>
       </section>
+      )}
 
       {/* Featured Collection */}
       <section>

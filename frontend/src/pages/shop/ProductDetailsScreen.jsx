@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,32 +17,72 @@ import ColorSelector from "../../components/ui/ColorSelector";
 import ReviewCard from "../../components/ui/ReviewCard";
 import ProductCard from "../../components/ui/ProductCard";
 import { useAppContext } from "../../context/AppContext";
-import { products } from "../../data/products";
-import { reviews } from "../../data/reviews";
+import productService from "../../services/productService";
+
+const PLACEHOLDER = 'https://placehold.co/400x600/E2E8F0/94A3B8?text=Product';
 
 export default function ProductDetailsScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { wishlist, toggleWishlist, addToCart } = useAppContext();
 
-  const product = products.find((p) => p.id === Number(id));
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [currentImage, setCurrentImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const productReviews = useMemo(
-    () => reviews.filter((r) => r.productId === Number(id)),
-    [id]
-  );
+  useEffect(() => {
+    async function fetchProduct() {
+      setLoading(true);
+      try {
+        const res = await productService.getById(id);
+        const p = res?.data?.product || res?.data || res;
+        setProduct(p);
+        if (p.category) {
+          try {
+            const catRes = await productService.getByCategory(p.category.slug || p.category.id);
+            const related = Array.isArray(catRes) ? catRes : catRes?.data?.products || catRes?.data || [];
+            setRelatedProducts(related.filter((r) => r.id !== p.id).slice(0, 8));
+          } catch {}
+        }
+      } catch (err) {
+        console.error('Failed to load product:', err);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProduct();
+  }, [id]);
 
-  const relatedProducts = useMemo(
-    () =>
-      products.filter(
-        (p) => p.category === product?.category && p.id !== product?.id
-      ),
+  const productReviews = useMemo(
+    () => product?.reviews || [],
     [product]
   );
+
+  const apiImg = (p) => p?.thumbnail || p?.primary_image?.image || PLACEHOLDER;
+  const apiPrice = (p) => p?.display_price ?? p?.price ?? 0;
+  const apiRating = (p) => p?.average_rating ?? 0;
+  const apiDiscount = (p) => p?.discount_percent ?? (p?.has_sale ? Math.round((1 - p.sale_price / p.price) * 100) : 0);
+  const productImages = useMemo(() => {
+    if (!product) return [];
+    const imgs = product.images || [];
+    if (imgs.length > 0) return imgs.map((i) => i.image || i);
+    const primary = product.primary_image?.image;
+    if (primary) return [primary];
+    return [product.thumbnail].filter(Boolean);
+  }, [product]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-secondary to-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -61,6 +101,8 @@ export default function ProductDetailsScreen() {
   }
 
   const inWishlist = wishlist?.includes(product.id);
+  const sizes = product.variants?.filter(v => v.size).map(v => v.size?.name || v.size).filter((v, i, a) => a.indexOf(v) === i) || [];
+  const colors = product.variants?.filter(v => v.color).map(v => v.color?.hex_code || v.color?.name || v.color).filter((v, i, a) => a.indexOf(v) === i) || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary to-background pb-24">
@@ -70,7 +112,7 @@ export default function ProductDetailsScreen() {
           <AnimatePresence mode="wait">
             <motion.img
               key={currentImage}
-              src={product.images[currentImage] || product.image}
+              src={productImages[currentImage] || apiImg(product)}
               alt={product.name}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -79,20 +121,20 @@ export default function ProductDetailsScreen() {
               className="w-full h-full object-cover"
             />
           </AnimatePresence>
-          {product.discount && (
+          {apiDiscount(product) > 0 && (
             <Badge variant="discount" className="absolute top-4 left-4">
-              -{product.discount}%
+              -{apiDiscount(product)}%
             </Badge>
           )}
-          {product.isNew && (
+          {product.is_new && (
             <Badge variant="new" className="absolute top-4 left-4">
               New
             </Badge>
           )}
           {/* Dot indicators */}
-          {product.images.length > 1 && (
+          {productImages.length > 1 && (
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-              {product.images.map((_, i) => (
+              {productImages.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrentImage(i)}
@@ -143,31 +185,33 @@ export default function ProductDetailsScreen() {
           </h1>
           <div className="flex items-center gap-3 mt-2">
             <span className="text-2xl font-bold text-text-primary">
-              ₹{product.price}
+              ₹{apiPrice(product)}
             </span>
-            {product.originalPrice && (
+            {product.has_sale && product.price && (
               <span className="text-lg text-text-secondary line-through">
-                ₹{product.originalPrice}
+                ₹{product.price}
               </span>
             )}
-            {product.discount && (
-              <Badge variant="discount">{product.discount}% off</Badge>
+            {apiDiscount(product) > 0 && (
+              <Badge variant="discount">{apiDiscount(product)}% off</Badge>
             )}
           </div>
         </div>
 
         {/* Rating */}
+        {apiRating(product) > 0 && (
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
             <Star size={16} className="fill-star text-star" />
             <span className="font-semibold text-text-primary">
-              {product.rating}
+              {apiRating(product)}
             </span>
           </div>
           <span className="text-text-secondary text-sm">
-            ({product.reviews} reviews)
+            ({product.reviews_count || product.reviews?.length || 0} reviews)
           </span>
         </div>
+        )}
 
         {/* Description */}
         <p className="text-sm text-text-secondary leading-relaxed">
@@ -175,13 +219,13 @@ export default function ProductDetailsScreen() {
         </p>
 
         {/* Size Selector */}
-        {product.sizes.length > 0 && (
+        {sizes.length > 0 && (
           <div>
             <h4 className="text-sm font-semibold text-text-primary mb-3">
               Select Size
             </h4>
             <SizeSelector
-              sizes={product.sizes}
+              sizes={sizes}
               selected={selectedSize}
               onSelect={setSelectedSize}
             />
@@ -189,13 +233,13 @@ export default function ProductDetailsScreen() {
         )}
 
         {/* Color Selector */}
-        {product.colors.length > 0 && (
+        {colors.length > 0 && (
           <div>
             <h4 className="text-sm font-semibold text-text-primary mb-3">
               Select Color
             </h4>
             <ColorSelector
-              colors={product.colors}
+              colors={colors}
               selected={selectedColor}
               onSelect={setSelectedColor}
             />
@@ -231,28 +275,28 @@ export default function ProductDetailsScreen() {
                     <span className="font-medium text-text-primary">
                       Category:{" "}
                     </span>
-                    {product.category}
+                    {product.category?.name || product.category}
                   </p>
-                  {product.subcategory && (
+                  {product.category?.slug && (
                     <p>
                       <span className="font-medium text-text-primary">
                         Type:{" "}
                       </span>
-                      {product.subcategory}
+                      {product.category.slug}
                     </p>
                   )}
                   <p>
                     <span className="font-medium text-text-primary">
                       Availability:{" "}
                     </span>
-                    {product.inStock ? "In Stock" : "Out of Stock"}
+                    {product.is_out_of_stock ? "Out of Stock" : "In Stock"}
                   </p>
-                  {product.sizes.length > 0 && (
+                  {sizes.length > 0 && (
                     <p>
                       <span className="font-medium text-text-primary">
                         Sizes:{" "}
                       </span>
-                      {product.sizes.join(", ")}
+                      {sizes.join(", ")}
                     </p>
                   )}
                 </div>
@@ -264,7 +308,7 @@ export default function ProductDetailsScreen() {
         {/* Reviews Section */}
         <div className="border-t border-border pt-4">
           <h4 className="text-sm font-semibold text-text-primary mb-4">
-            Reviews ({product.reviews})
+            Reviews ({product.reviews_count || product.reviews?.length || 0})
           </h4>
           <div className="space-y-3">
             {productReviews.slice(0, 4).map((review) => (
@@ -291,23 +335,29 @@ export default function ProductDetailsScreen() {
               Related Products
             </h4>
             <div className="flex overflow-x-auto gap-4 pb-2 -mx-5 px-5 scrollbar-none">
-              {relatedProducts.map((rp) => (
+              {relatedProducts.map((rp) => {
+                const rpImg = rp.thumbnail || rp.primary_image?.image || PLACEHOLDER;
+                const rpPrice = rp.display_price ?? rp.price ?? 0;
+                const rpRating = rp.average_rating ?? 0;
+                const rpDiscount = rp.discount_percent ?? (rp.has_sale ? Math.round((1 - rp.sale_price / rp.price) * 100) : 0);
+                return (
                 <div
                   key={rp.id}
                   className="min-w-[140px] w-[140px] flex-shrink-0"
                 >
                   <ProductCard
-                    image={rp.image}
+                    image={rpImg}
                     name={rp.name}
-                    price={rp.price}
-                    rating={rp.rating}
-                    discount={rp.discount}
+                    price={rpPrice}
+                    rating={rpRating}
+                    discount={rpDiscount}
                     isWishlisted={wishlist?.includes(rp.id)}
                     onToggleWishlist={() => toggleWishlist?.(rp.id)}
-                    onClick={() => navigate(`/product/${rp.id}`)}
+                    onClick={() => navigate(`/product/${rp.slug || rp.id}`)}
                   />
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

@@ -13,7 +13,7 @@ const cartService = {
 
   update: (data) => api.put('/cart/update', withSession(data)),
 
-  remove: (id) => api.delete(`/cart/remove/${id}`, withSession()),
+  remove: (id) => api.delete(`/cart/remove/${id}`),
 
   clear: () => api.post('/cart/clear', withSession()),
 

@@ -28,9 +28,12 @@ class CartService
         if (! $cart && $sessionId) {
             $cart = Cart::where('session_id', $sessionId)
                 ->where('status', 'active')
-                ->whereNull('user_id')
                 ->with('activeItems.product.primaryImage', 'activeItems.variant.color', 'activeItems.variant.size')
                 ->first();
+
+            if ($cart && $userId) {
+                $cart->update(['user_id' => $userId]);
+            }
         }
 
         if (! $cart) {
@@ -171,6 +174,7 @@ class CartService
 
         $cart->coupon_code = $code;
         $cart->discount = $result['discount'];
+        $cart->save();
 
         return $this->getCartSummary($cart);
     }

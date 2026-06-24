@@ -28,7 +28,7 @@ const mockProducts = {
       return { data: result, total: result.length };
     }
     const { api } = await import('./api');
-    return api.get('/products', params);
+    return api.get('/public/products', params);
   },
 
   getById: async (id) => {
@@ -39,7 +39,7 @@ const mockProducts = {
       return product;
     }
     const { api } = await import('./api');
-    return api.get(`/products/${id}`);
+    return api.get(`/public/products/${id}`);
   },
 
   getByCategory: async (category) => {
@@ -48,7 +48,7 @@ const mockProducts = {
       return products.filter((p) => p.category === category);
     }
     const { api } = await import('./api');
-    return api.get('/products', { category });
+    return api.get('/public/products', { category });
   },
 
   getTrending: async () => {
@@ -57,7 +57,7 @@ const mockProducts = {
       return products.filter((p) => p.isTrending);
     }
     const { api } = await import('./api');
-    return api.get('/products/trending');
+    return api.get('/public/products/trending');
   },
 
   getNewArrivals: async () => {
@@ -66,7 +66,7 @@ const mockProducts = {
       return products.filter((p) => p.isNew);
     }
     const { api } = await import('./api');
-    return api.get('/products/new');
+    return api.get('/public/products/new-arrivals');
   },
 };
 
@@ -77,7 +77,7 @@ const mockCategories = {
       return categories;
     }
     const { api } = await import('./api');
-    return api.get('/categories');
+    return api.get('/public/categories');
   },
 };
 
@@ -88,7 +88,7 @@ const mockBanners = {
       return banners.filter((b) => b.isActive);
     }
     const { api } = await import('./api');
-    return api.get('/banners');
+    return api.get('/public/homepage/banners');
   },
 };
 
@@ -99,7 +99,7 @@ const mockReviews = {
       return reviews.filter((r) => r.productId === Number(productId));
     }
     const { api } = await import('./api');
-    return api.get('/reviews', { productId });
+    return api.get('/public/products/related', { productId });
   },
 };
 

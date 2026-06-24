@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { SlidersHorizontal, ArrowUpDown, Star } from "lucide-react";
@@ -6,7 +6,8 @@ import ProductCard from "../../components/ui/ProductCard";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import { useAppContext } from "../../context/AppContext";
-import { products } from "../../data/products";
+import productService from "../../services/productService";
+import Loader from "../../components/ui/Loader";
 
 const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
@@ -17,6 +18,12 @@ const sortOptions = [
   { label: "Rating", value: "rating" },
   { label: "Newest", value: "newest" },
 ];
+
+const PLACEHOLDER = 'https://placehold.co/400x600/E2E8F0/94A3B8?text=Product';
+const apiImg = (p) => p?.thumbnail || p?.primary_image?.image || PLACEHOLDER;
+const apiPrice = (p) => p?.display_price ?? p?.price ?? 0;
+const apiRating = (p) => p?.average_rating ?? 0;
+const apiDiscount = (p) => p?.discount_percent ?? (p?.has_sale ? Math.round((1 - p.sale_price / p.price) * 100) : 0);
 
 export default function ProductListingScreen() {
   const { category } = useParams();
@@ -30,59 +37,70 @@ export default function ProductListingScreen() {
   const [minRating, setMinRating] = useState(0);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [sortBy, setSortBy] = useState("relevance");
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    productService.getAll({ limit: 100 }).then((res) => {
+      const list = Array.isArray(res?.data?.products) ? res.data.products : Array.isArray(res?.data) ? res.data : [];
+      setAllProducts(list);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, []);
 
   const categoryName = category
     ? category.charAt(0).toUpperCase() + category.slice(1)
     : "All Products";
 
   const filtered = useMemo(() => {
-    let result = [...products];
+    let result = [...allProducts];
 
     if (category) {
       result = result.filter(
-        (p) => p.category.toLowerCase() === category.toLowerCase()
+        (p) => (p.category?.slug || p.category || '').toLowerCase() === category.toLowerCase()
       );
     }
 
     if (selectedCategories.length > 0) {
       result = result.filter((p) =>
-        selectedCategories.includes(p.category)
+        selectedCategories.includes(p.category?.slug || p.category)
       );
     }
 
     if (selectedSizes.length > 0) {
-      result = result.filter((p) =>
-        p.sizes.some((s) => selectedSizes.includes(s))
-      );
+      result = result.filter((p) => {
+        const pSizes = (p.variants || []).filter(v => v.size).map(v => v.size?.name || v.size);
+        return pSizes.some((s) => selectedSizes.includes(s));
+      });
     }
 
     result = result.filter(
-      (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
+      (p) => apiPrice(p) >= priceRange[0] && apiPrice(p) <= priceRange[1]
     );
 
     if (minRating > 0) {
-      result = result.filter((p) => p.rating >= minRating);
+      result = result.filter((p) => apiRating(p) >= minRating);
     }
 
     switch (sortBy) {
       case "price-asc":
-        result.sort((a, b) => a.price - b.price);
+        result.sort((a, b) => apiPrice(a) - apiPrice(b));
         break;
       case "price-desc":
-        result.sort((a, b) => b.price - a.price);
+        result.sort((a, b) => apiPrice(b) - apiPrice(a));
         break;
       case "rating":
-        result.sort((a, b) => b.rating - a.rating);
+        result.sort((a, b) => apiRating(b) - apiRating(a));
         break;
       case "newest":
-        result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+        result.sort((a, b) => (b.is_new ? 1 : 0) - (a.is_new ? 1 : 0));
         break;
       default:
         break;
     }
 
     return result;
-  }, [category, selectedSizes, priceRange, minRating, selectedCategories, sortBy]);
+  }, [allProducts, category, selectedSizes, priceRange, minRating, selectedCategories, sortBy]);
 
   const toggleSize = (size) => {
     setSelectedSizes((prev) =>
@@ -107,7 +125,7 @@ export default function ProductListingScreen() {
     setSelectedCategories([]);
   };
 
-  const uniqueCategories = [...new Set(products.map((p) => p.category))];
+  const uniqueCategories = [...new Set(allProducts.map((p) => p.category?.slug || p.category || '').filter(Boolean))];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary to-background"><div className="px-5 py-4 max-w-md mx-auto w-full">
@@ -133,7 +151,9 @@ export default function ProductListingScreen() {
       </div>
 
       {/* Product Grid */}
-      {filtered.length > 0 ? (
+      {loading ? (
+        <div className="flex items-center justify-center py-16"><Loader /></div>
+      ) : filtered.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
           {filtered.map((product, index) => (
             <motion.div
@@ -143,14 +163,14 @@ export default function ProductListingScreen() {
               transition={{ delay: index * 0.05 }}
             >
               <ProductCard
-                image={product.image}
+                image={apiImg(product)}
                 name={product.name}
-                price={product.price}
-                rating={product.rating}
-                discount={product.discount}
+                price={apiPrice(product)}
+                rating={apiRating(product)}
+                discount={apiDiscount(product)}
                 isWishlisted={wishlist?.includes(product.id)}
                 onToggleWishlist={() => toggleWishlist?.(product.id)}
-                onClick={() => navigate(`/product/${product.id}`)}
+                onClick={() => navigate(`/product/${product.slug || product.id}`)}
               />
             </motion.div>
           ))}

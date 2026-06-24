@@ -9,6 +9,7 @@ use App\Services\CheckoutService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class CheckoutController extends Controller
 {
@@ -64,9 +65,16 @@ class CheckoutController extends Controller
 
     protected function getCart(Request $request): Cart
     {
-        $userId = auth()->id();
+        $userId = null;
+        $tokenString = $request->bearerToken();
+        if ($tokenString) {
+            $token = PersonalAccessToken::findToken($tokenString);
+            if ($token) {
+                $userId = $token->tokenable_id;
+            }
+        }
         $sessionId = $request->header('X-Session-Id');
 
-        return $this->cartService->getOrCreateCart($userId ?: null, $sessionId);
+        return $this->cartService->getOrCreateCart($userId, $sessionId);
     }
 }

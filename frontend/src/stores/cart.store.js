@@ -24,15 +24,16 @@ const useCartStore = create((set, get) => ({
     try {
       const res = await cartService.getCart();
       const cartData = res.data?.cart || {};
+      const summary = res.data?.summary || {};
       set({
         cart: cartData,
-        items: cartData.items || [],
+        items: cartData.active_items || cartData.items || [],
         summary: {
-          subtotal: cartData.subtotal || 0,
-          discount: cartData.discount || 0,
-          shipping_charge: cartData.shipping_charge || 0,
-          tax: cartData.tax || 0,
-          grand_total: cartData.grand_total || 0,
+          subtotal: summary.subtotal ?? cartData.subtotal ?? 0,
+          discount: summary.discount ?? cartData.discount ?? 0,
+          shipping_charge: summary.shipping_charge ?? cartData.shipping_charge ?? 0,
+          tax: summary.tax ?? cartData.tax ?? 0,
+          grand_total: summary.grand_total ?? cartData.grand_total ?? 0,
         },
         couponCode: cartData.coupon_code || null,
         loading: false,
